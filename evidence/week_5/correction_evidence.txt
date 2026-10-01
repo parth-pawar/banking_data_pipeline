@@ -1,0 +1,20 @@
+Week 5 — Correction Evidence
+
+Existing transactions were corrected using UPSERT processing based on the later daily files.
+
+Correction 1:
+Transaction ID: T1001
+Original amount: 500.0
+Corrected amount: 550.0
+Correction source: transactions_20260908.csv
+
+Correction 2:
+Transaction ID: T4002
+Original amount: 50.0
+Corrected amount: 55.0
+Correction source: transactions_20260909.csv
+
+Final database verification:
+
+T1001 → 550.0
+T4002 → 55.0

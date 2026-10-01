@@ -1,0 +1,20 @@
+EXPLAIN QUERY PLAN before adding an index
+
+Query:
+EXPLAIN QUERY PLAN
+SELECT
+    t.transaction_id,
+    t.amount,
+    t.transaction_date
+FROM transactions t
+WHERE t.account_id = 'A1001';
+
+Result:
+(2, 0, 216, 'SCAN t')
+
+
+
+To create index
+
+CREATE INDEX idx_transactions_account_id
+ON transactions(account_id);

@@ -1,0 +1,2 @@
+currency,amount,transaction_id,transaction_type,account_id,transaction_date
+USD,500.00,T10001,CREDIT,A10001,2026-09-06

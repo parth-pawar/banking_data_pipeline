@@ -1,0 +1,2 @@
+transaction_id,account_id,transaction_date,transaction_type,amount,currency
+T6001,,2026-02-30,PIZZA,-100.00,EUR

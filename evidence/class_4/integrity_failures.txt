@@ -1,0 +1,16 @@
+PS C:\Users\Parth Pawar\Documents\relational_banking_database> python integrity_tests.py
+Test 1: Transaction with nonexistent account
+Expected: FOREIGN KEY constraint failure
+Actual: FOREIGN KEY constraint failed
+Test 2: Account with nonexistent customer
+Expected: FOREIGN KEY constraint failure
+Actual: FOREIGN KEY constraint failed
+Test 3: Duplicate account primary key
+Expected: PRIMARY KEY constraint failure
+Actual: UNIQUE constraint failed: account.account_id
+Test 4: Invalid transaction amount
+Expected: CHECK constraint failure
+Actual: CHECK constraint failed: amount > 0
+Test 5: Missing required customer name
+Expected: NOT NULL constraint failure
+Actual: NOT NULL constraint failed: customer.customer_name

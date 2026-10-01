@@ -1,0 +1,13 @@
+EXPLAIN QUERY PLAN after adding an index
+
+Query:
+EXPLAIN QUERY PLAN
+SELECT
+    t.transaction_id,
+    t.amount,
+    t.transaction_date
+FROM transactions t
+WHERE t.account_id = 'A1001';
+
+Result:
+(3, 0, 61, 'SEARCH t USING INDEX idx_transactions_account_id (account_id=?)')

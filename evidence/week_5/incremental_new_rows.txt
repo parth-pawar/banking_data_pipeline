@@ -1,0 +1,19 @@
+Week 5 — Incremental New Transaction Evidence
+
+The following transactions were added to banking.db through daily incremental processing.
+The original operational database contained 10 transactions. After processing the supplied daily files, the database contains these additional transaction IDs:
+
+T4001, T4002, T4003, T4004, T4005, T4006, T4007, T4008, T4009, T4010
+
+Query result:
+
+('T4001', 'A1001', '9/7/2026', 'CREDIT', 120.0, 'USD')
+('T4002', 'A2001', '2026-09-07', 'DEBIT', 55.0, 'USD')
+('T4003', 'A3001', '9/7/2026', 'CREDIT', 275.0, 'USD')
+('T4004', 'A1002', '9/7/2026', 'DEBIT', 35.0, 'USD')
+('T4005', 'A2005', '2026-09-08', 'CREDIT', 90.0, 'USD')
+('T4006', 'A3002', '2026-09-08', 'DEBIT', 110.0, 'USD')
+('T4007', 'A1007', '2026-09-08', 'CREDIT', 60.0, 'USD')
+('T4008', 'A3004', '2026-09-09', 'CREDIT', 410.0, 'USD')
+('T4009', 'A2007', '2026-09-09', 'DEBIT', 25.0, 'USD')
+('T4010', 'A3007', '2026-09-09', 'CREDIT', 80.0, 'USD')

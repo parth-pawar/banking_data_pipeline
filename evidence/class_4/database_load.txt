@@ -1,0 +1,12 @@
+Foreign-key enforcement: 1
+Database schema created.
+Customers loaded.
+Branches loaded.
+Accounts loaded.
+Transactions loaded.
+
+Final row counts:
+customer: 6
+branch: 3
+account: 10
+transactions: 10

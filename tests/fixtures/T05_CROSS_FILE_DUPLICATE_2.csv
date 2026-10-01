@@ -1,0 +1,2 @@
+transaction_id,account_id,transaction_date,transaction_type,amount,currency
+T7003,A7004,2026-09-06,DEBIT,200.00,USD

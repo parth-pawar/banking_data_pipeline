@@ -1,0 +1,11 @@
+Week 5 — Final Analytical Database Counts
+
+Final row counts in analytics.db:
+
+dim_customer: 6
+dim_branch: 3
+dim_account: 10
+dim_date: 4
+fact_transaction: 20
+
+The analytical layer contains one fact row for each unique banking transaction.

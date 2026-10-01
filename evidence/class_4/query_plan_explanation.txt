@@ -1,0 +1,27 @@
+Part E - Query Plan Explanation
+
+The query searches the transactions table for transactions belonging
+to a specific account_id.
+
+Before adding the index, SQLite used:
+
+SCAN t
+
+This means SQLite scanned the transactions table to find rows matching
+the requested account_id.
+
+After adding the index on transactions(account_id), SQLite used:
+
+SEARCH t USING INDEX idx_transactions_account_id (account_id=?)
+
+This shows that SQLite changed the query plan to use the index when
+searching for the account_id. An index can help because SQLite can use
+the indexed account_id values to locate matching rows without scanning
+the entire transactions table.
+
+The query plan shows the strategy chosen by SQLite's query planner.
+It does not measure the actual execution time of the query and does
+not prove a specific performance improvement. The database in this
+assignment contains only a small number of rows, so the query-plan
+change demonstrates how an index can affect query execution strategy,
+rather than proving a measurable speed improvement.

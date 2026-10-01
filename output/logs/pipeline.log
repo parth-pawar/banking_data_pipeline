@@ -1,0 +1,8 @@
+2026-09-29 09:22:56,977 - INFO - Pipeline started
+2026-09-29 09:22:56,980 - INFO - Reading file: data/raw\BR001_20260906_TRANSACTION.csv
+2026-09-29 09:22:56,985 - INFO - Successfully read file: data/raw\BR001_20260906_TRANSACTION.csv
+2026-09-29 09:22:56,987 - INFO - Reading file: data/raw\BR002_20260906_TRANSACTION.csv
+2026-09-29 09:22:56,990 - INFO - Successfully read file: data/raw\BR002_20260906_TRANSACTION.csv
+2026-09-29 09:22:56,991 - INFO - Reading file: data/raw\BR003_20260906_TRANSACTION.csv
+2026-09-29 09:22:56,993 - INFO - Successfully read file: data/raw\BR003_20260906_TRANSACTION.csv
+2026-09-29 09:22:57,076 - INFO - Pipeline completed successfully.

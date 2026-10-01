@@ -1,0 +1,2 @@
+transaction_id,account_id,transaction_date,transaction_type,amount
+T5001,A5001,2026-09-06,CREDIT,500.00

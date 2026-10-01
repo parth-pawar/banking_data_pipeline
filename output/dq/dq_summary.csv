@@ -1,0 +1,15 @@
+metric,count
+total rows read,24
+valid rows,10
+invalid rows,14
+rejection rate,58.33
+missing transaction_id,1
+missing account_id,2
+invalid transaction_type,3
+invalid amount,3
+invalid transaction_date,2
+invalid currency,2
+duplicate transaction_id,2
+files discovered,3
+files successfully read,3
+files skipped,0

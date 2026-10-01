@@ -1,0 +1,19 @@
+Week 2 & 3 -- Pytest Results
+
+
+tests/test_pipeline.py::test_missing_required_column_is_skipped PASSED                                                                                   [ 33%]
+tests/test_pipeline.py::test_multiple_row_errors_are_preserved PASSED                                                                                    [ 66%]
+tests/test_pipeline.py::test_original_branch_files_regression PASSED
+
+
+
+tests/test_validation.py::test_positive_amount_is_valid PASSED                                                                                           [ 10%]
+tests/test_validation.py::test_negative_amount_is_invalid PASSED                                                                                         [ 20%]
+tests/test_validation.py::test_non_numeric_amount_is_invalid PASSED                                                                                      [ 30%]
+tests/test_validation.py::test_valid_date_is_accepted PASSED                                                                                             [ 40%]
+tests/test_validation.py::test_wrong_date_format_is_rejected PASSED                                                                                      [ 50%]
+tests/test_validation.py::test_impossible_date_is_rejected PASSED                                                                                        [ 60%]
+tests/test_validation.py::test_credit_transaction_type_is_valid PASSED                                                                                   [ 70%]
+tests/test_validation.py::test_invalid_transaction_type_is_rejected PASSED                                                                               [ 80%]
+tests/test_validation.py::test_usd_currency_is_valid PASSED                                                                                              [ 90%]
+tests/test_validation.py::test_non_usd_currency_is_rejected PASSED        

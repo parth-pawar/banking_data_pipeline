@@ -1,0 +1,10 @@
+Week 5 — Final Operational Database Counts
+
+Final row counts in banking.db:
+
+customer: 6
+branch: 3
+account: 10
+transactions: 20
+
+The operational database contains 20 unique transactions after processing the supplied daily files and corrections.

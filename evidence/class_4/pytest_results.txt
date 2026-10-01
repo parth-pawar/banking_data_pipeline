@@ -1,0 +1,10 @@
+Week 4 -- Pytest Results
+
+tests/test_database.py::test_expected_tables PASSED                                                                                                      [ 12%]
+tests/test_database.py::test_foreign_keys_enabled PASSED                                                                                                 [ 25%]
+tests/test_database.py::test_expected_row_counts PASSED                                                                                                  [ 37%]
+tests/test_database.py::test_duplicate_primary_key_rejected PASSED                                                                                       [ 50%]
+tests/test_database.py::test_invalid_foreign_key_rejected PASSED                                                                                         [ 62%]
+tests/test_database.py::test_invalid_amount_rejected PASSED                                                                                              [ 75%]
+tests/test_database.py::test_highest_transaction_branch PASSED                                                                                           [ 87%]
+tests/test_database.py::test_rerun_rebuilds_database PASSED           

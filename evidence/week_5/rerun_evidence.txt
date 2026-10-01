@@ -1,0 +1,15 @@
+Week 5 — Rerun Safety Evidence
+
+The daily file transactions_20260909.csv was processed twice.
+
+Transaction count before rerun: 20
+Transaction count after rerun: 20
+
+The rerun did not create duplicate business transactions.
+
+Correction verification:
+T4002 amount after the correction: 55.0
+T4002 amount after rerun: 55.0
+
+Result:
+The rerun preserved the existing correction and did not increase the transaction count.

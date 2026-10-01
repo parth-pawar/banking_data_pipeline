@@ -1,0 +1,64 @@
+-- 1. Transaction count and total amount by branch
+-- Shows the number of transactions and total transaction amount for each branch. 
+
+('BR001', 'Downtown Branch', 6, 930.5)
+('BR002', 'North Branch', 6, 1355.0)
+('BR003', 'Lake Branch', 8, 2450.0)
+
+
+-- 2. Transaction count and total amount by transaction type
+-- Shows the number of transactions and total transaction amount for each transaction type.
+
+('CREDIT', 11, 4060.0)
+('DEBIT', 9, 675.5)
+
+
+
+-- 3. Transaction activity by customer
+-- Shows the number of transactions and total transaction amount for each customer.
+
+('C1001', 'Maya Patel', 4, 830.5)
+('C1002', 'Daniel Kim', 2, 100.0)
+('C1003', 'Sofia Martinez', 4, 1270.0)
+('C1004', 'Noah Williams', 2, 85.0)
+('C1005', 'Ava Thompson', 4, 1585.0)
+('C1006', 'Ethan Brown', 4, 865.0)
+
+
+
+-- 4. Transaction activity by date
+-- Shows the number of transactions and total transaction amount for each transaction date.
+
+('2026-09-06', 10, 3475.5)
+('2026-09-07', 4, 485.0)
+('2026-09-08', 3, 260.0)
+('2026-09-09', 3, 515.0)
+
+
+-- 5. Transaction activity by customer and branch
+-- Shows transaction activity for each customer along with the branch associated with their account.
+
+('C1001', 'Maya Patel', 'BR001', 'Downtown Branch', 4, 830.5)
+('C1002', 'Daniel Kim', 'BR001', 'Downtown Branch', 2, 100.0)
+('C1003', 'Sofia Martinez', 'BR002', 'North Branch', 4, 1270.0)
+('C1004', 'Noah Williams', 'BR002', 'North Branch', 2, 85.0)
+('C1005', 'Ava Thompson', 'BR003', 'Lake Branch', 4, 1585.0)
+('C1006', 'Ethan Brown', 'BR003', 'Lake Branch', 4, 865.0)
+
+
+-- 6. Average transaction amount by account type
+-- Calculates the average transaction amount for each account type, such as CHECKING and SAVINGS.
+
+('CHECKING', 12, 320.42)
+('SAVINGS', 8, 111.31)
+
+
+
+-- 7. Largest individual transactions
+-- Shows the largest individual transactions in the analytical dataset.
+
+('T3001', 'Ava Thompson', 'Lake Branch', 'CREDIT', 1000.0, '2026-09-06')
+('T2001', 'Sofia Martinez', 'North Branch', 'CREDIT', 900.0, '2026-09-06')
+('T1001', 'Maya Patel', 'Downtown Branch', 'CREDIT', 550.0, '2026-09-06')
+('T4008', 'Ethan Brown', 'Lake Branch', 'CREDIT', 410.0, '2026-09-09')
+('T3004', 'Ethan Brown', 'Lake Branch', 'CREDIT', 350.0, '2026-09-06')

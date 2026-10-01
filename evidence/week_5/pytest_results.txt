@@ -1,0 +1,11 @@
+Week 5 — Pytest Results
+
+tests/test_analytics.py::test_fact_rows_reference_valid_dimensions PASSED
+tests/test_analytics.py::test_fact_transaction_has_unique_transaction_ids PASSED
+tests/test_analytics.py::test_branch_transaction_summary_returns_known_result PASSED
+
+tests/test_incremental_load.py::test_new_transaction_is_inserted PASSED
+tests/test_incremental_load.py::test_existing_transaction_correction_updates_value PASSED
+tests/test_incremental_load.py::test_rerunning_same_batch_does_not_increase_transaction_count PASSED
+
+Week 5 tests passed: 6
