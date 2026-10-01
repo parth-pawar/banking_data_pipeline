@@ -5,6 +5,33 @@ The original operational database contained 10 transactions. After processing th
 
 T4001, T4002, T4003, T4004, T4005, T4006, T4007, T4008, T4009, T4010
 
+
+Query: 
+
+SELECT
+    transaction_id,
+    account_id,
+    transaction_date,
+    transaction_type,
+    amount,
+    currency
+FROM transactions
+WHERE transaction_id IN (
+    'T4001',
+    'T4002',
+    'T4003',
+    'T4004',
+    'T4005',
+    'T4006',
+    'T4007',
+    'T4008',
+    'T4009',
+    'T4010'
+)
+ORDER BY transaction_id;
+
+
+
 Query result:
 
 ('T4001', 'A1001', '9/7/2026', 'CREDIT', 120.0, 'USD')
