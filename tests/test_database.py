@@ -212,7 +212,7 @@ def test_highest_transaction_branch():
 
 
 
-def test_rerun_rebuilds_database(tmp_path):
+def test_rerun_does_not_duplicate_data(tmp_path):
     db_path = tmp_path / "test_banking.db"
 
     database.build_database(str(db_path))
