@@ -15,7 +15,7 @@ def create_connection(db_path=None):
     connection.execute("PRAGMA foreign_keys = ON")
     return connection
 
-
+# excluded means: the new row that SQLite tried to insert but couldn't because of the conflict.
 def load_daily_file(file_path, db_path=None):
     """Read one daily transaction CSV file."""
     connection = create_connection(db_path)
