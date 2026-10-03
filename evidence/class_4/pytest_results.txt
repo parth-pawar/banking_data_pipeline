@@ -7,4 +7,4 @@ tests/test_database.py::test_duplicate_primary_key_rejected PASSED              
 tests/test_database.py::test_invalid_foreign_key_rejected PASSED                                                                                         [ 62%]
 tests/test_database.py::test_invalid_amount_rejected PASSED                                                                                              [ 75%]
 tests/test_database.py::test_highest_transaction_branch PASSED                                                                                           [ 87%]
-tests/test_database.py::test_rerun_rebuilds_database PASSED           
+tests/test_database.py::test_rerun_does_not_duplicate_data PASSED
