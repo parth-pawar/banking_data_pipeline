@@ -8,16 +8,13 @@ SELECT
     COUNT(f.transaction_id) AS transaction_count,
     SUM(f.amount) AS total_amount
 FROM fact_transaction f
-JOIN dim_account a
-    ON f.account_id = a.account_id
 JOIN dim_branch b
-    ON a.branch_id = b.branch_id
+    ON f.branch_id = b.branch_id
 GROUP BY
     b.branch_id,
     b.branch_name
 ORDER BY
     b.branch_id;
-
 
 
 
@@ -47,10 +44,8 @@ SELECT
     COUNT(f.transaction_id) AS transaction_count,
     SUM(f.amount) AS total_amount
 FROM fact_transaction f
-JOIN dim_account a
-    ON f.account_id = a.account_id
 JOIN dim_customer c
-    ON a.customer_id = c.customer_id
+    ON f.customer_id = c.customer_id
 GROUP BY
     c.customer_id,
     c.customer_name
@@ -90,12 +85,10 @@ SELECT
     COUNT(f.transaction_id) AS transaction_count,
     SUM(f.amount) AS total_amount
 FROM fact_transaction f
-JOIN dim_account a
-    ON f.account_id = a.account_id
 JOIN dim_customer c
-    ON a.customer_id = c.customer_id
+    ON f.customer_id = c.customer_id
 JOIN dim_branch b
-    ON a.branch_id = b.branch_id
+    ON f.branch_id = b.branch_id
 GROUP BY
     c.customer_id,
     c.customer_name,
@@ -134,12 +127,10 @@ SELECT
     f.amount,
     f.transaction_date
 FROM fact_transaction f
-JOIN dim_account a
-    ON f.account_id = a.account_id
 JOIN dim_customer c
-    ON a.customer_id = c.customer_id
+    ON f.customer_id = c.customer_id
 JOIN dim_branch b
-    ON a.branch_id = b.branch_id
+    ON f.branch_id = b.branch_id
 ORDER BY
     f.amount DESC
 LIMIT 5;

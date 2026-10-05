@@ -7,37 +7,21 @@ connection = sqlite3.connect(
 
 query = """
 SELECT
-    'dim_customer' AS table_name,
-    COUNT(*) AS row_count
-FROM dim_customer
+    f.transaction_id,
+    c.customer_name,
+    b.branch_name,
+    f.transaction_type,
+    f.amount,
+    f.transaction_date
+FROM fact_transaction f
+JOIN dim_customer c
+    ON f.customer_id = c.customer_id
+JOIN dim_branch b
+    ON f.branch_id = b.branch_id
+ORDER BY
+    f.amount DESC
+LIMIT 5;
 
-UNION ALL
-
-SELECT
-    'dim_branch',
-    COUNT(*)
-FROM dim_branch
-
-UNION ALL
-
-SELECT
-    'dim_account',
-    COUNT(*)
-FROM dim_account
-
-UNION ALL
-
-SELECT
-    'dim_date',
-    COUNT(*)
-FROM dim_date
-
-UNION ALL
-
-SELECT
-    'fact_transaction',
-    COUNT(*)
-FROM fact_transaction;
 """
 
 rows = connection.execute(query).fetchall()

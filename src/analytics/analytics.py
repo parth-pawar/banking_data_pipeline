@@ -187,21 +187,26 @@ def load_dates(analytics_connection, operational_connection):
 
 def load_transactions(analytics_connection, operational_connection):
     """Load transactions from banking.db into fact_transaction."""
+
     rows = operational_connection.execute(
         """
         SELECT
-            transaction_id,
-            account_id,
-            transaction_date,
-            transaction_type,
-            amount,
-            currency
-        FROM transactions
+            t.transaction_id,
+            a.customer_id,
+            t.account_id,
+            a.branch_id,
+            t.transaction_date,
+            t.transaction_type,
+            t.amount,
+            t.currency
+        FROM transactions t
+        JOIN account a
+            ON t.account_id = a.account_id
         """
     ).fetchall()
 
     for row in rows:
-        raw_date = row[2]
+        raw_date = row[4]
 
         parsed_date = None
 
@@ -226,21 +231,25 @@ def load_transactions(analytics_connection, operational_connection):
             """
             INSERT OR REPLACE INTO fact_transaction (
                 transaction_id,
+                customer_id,
                 account_id,
+                branch_id,
                 transaction_date,
                 transaction_type,
                 amount,
                 currency
             )
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 row[0],
                 row[1],
-                normalized_date,
+                row[2],
                 row[3],
-                row[4],
+                normalized_date,
                 row[5],
+                row[6],
+                row[7],
             )
         )
 

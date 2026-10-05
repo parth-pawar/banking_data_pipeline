@@ -17,9 +17,7 @@ CREATE TABLE IF NOT EXISTS dim_account (
     customer_id TEXT NOT NULL,
     branch_id TEXT NOT NULL,
     account_type TEXT NOT NULL,
-    account_status TEXT NOT NULL,
-    FOREIGN KEY (customer_id) REFERENCES dim_customer(customer_id),
-    FOREIGN KEY (branch_id) REFERENCES dim_branch(branch_id)
+    account_status TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS dim_date (
@@ -31,11 +29,16 @@ CREATE TABLE IF NOT EXISTS dim_date (
 
 CREATE TABLE IF NOT EXISTS fact_transaction (
     transaction_id TEXT PRIMARY KEY,
+    customer_id TEXT NOT NULL,
     account_id TEXT NOT NULL,
+    branch_id TEXT NOT NULL,
     transaction_date TEXT NOT NULL,
     transaction_type TEXT NOT NULL,
     amount REAL NOT NULL,
     currency TEXT NOT NULL,
+
+    FOREIGN KEY (customer_id) REFERENCES dim_customer(customer_id),
     FOREIGN KEY (account_id) REFERENCES dim_account(account_id),
+    FOREIGN KEY (branch_id) REFERENCES dim_branch(branch_id),
     FOREIGN KEY (transaction_date) REFERENCES dim_date(date)
 );
