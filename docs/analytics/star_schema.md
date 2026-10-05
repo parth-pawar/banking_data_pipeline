@@ -1,12 +1,12 @@
 # Analytical Star Schema
 
-The analytical layer uses `fact_transaction` at the grain of one banking transaction. The fact table connects to customer, account, branch, and date dimensions.
+The analytical layer uses `fact_transaction` at the grain of one banking transaction. The fact table directly connects to the customer, account, branch, and date dimensions.
 
 ```mermaid
 erDiagram
-    DIM_CUSTOMER ||--o{ DIM_ACCOUNT : has
-    DIM_BRANCH ||--o{ DIM_ACCOUNT : contains
+    DIM_CUSTOMER ||--o{ FACT_TRANSACTION : has
     DIM_ACCOUNT ||--o{ FACT_TRANSACTION : records
+    DIM_BRANCH ||--o{ FACT_TRANSACTION : contains
     DIM_DATE ||--o{ FACT_TRANSACTION : dates
 
     DIM_CUSTOMER {
@@ -25,8 +25,8 @@ erDiagram
 
     DIM_ACCOUNT {
         TEXT account_id PK
-        TEXT customer_id FK
-        TEXT branch_id FK
+        TEXT customer_id
+        TEXT branch_id
         TEXT account_type
         TEXT account_status
     }
@@ -40,7 +40,9 @@ erDiagram
 
     FACT_TRANSACTION {
         TEXT transaction_id PK
+        TEXT customer_id FK
         TEXT account_id FK
+        TEXT branch_id FK
         TEXT transaction_date FK
         TEXT transaction_type
         REAL amount
@@ -52,4 +54,4 @@ erDiagram
 
 One row in `fact_transaction` represents **one banking transaction identified by `transaction_id`**.
 
-The fact table stores transaction-level measures and foreign keys, while the dimension tables provide descriptive information used for analysis.
+The fact table stores transaction-level measures and the foreign keys needed to connect each transaction directly to the customer, account, branch, and date dimensions. The dimension tables provide descriptive information used for analysis.

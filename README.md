@@ -535,7 +535,6 @@ At the declared grain:
 ```
 
 ---
-
 # 14. Fact and Dimension Model
 
 The analytical model contains one central fact table:
@@ -553,24 +552,29 @@ dim_branch
 dim_date
 ```
 
-The fact table stores transaction-level information such as:
+The fact table stores transaction-level information and the keys needed to connect each transaction directly to the relevant dimensions:
 
 ```text
 transaction_id
+customer_id
 account_id
+branch_id
 transaction_date
 transaction_type
 amount
 currency
 ```
 
-The dimensions provide descriptive context.
+The dimensions provide descriptive context for analysis.
 
 ```text
                  dim_customer
                       |
                       v
-dim_branch ----> dim_account ----> fact_transaction <---- dim_date
+dim_branch ----> fact_transaction <---- dim_account
+                      ^
+                      |
+                   dim_date
 ```
 
 For example:
@@ -579,7 +583,9 @@ For example:
 * `dim_account` describes the account.
 * `dim_branch` describes the branch.
 * `dim_date` describes the transaction date.
-* `fact_transaction` records what transaction occurred.
+* `fact_transaction` records each banking transaction and directly references the relevant customer, account, branch, and date.
+
+The fact table has a grain of **one row per banking transaction**, identified by `transaction_id`.
 
 The analytical star-schema documentation is stored in:
 
@@ -588,6 +594,7 @@ docs/analytics/star_schema.md
 ```
 
 ---
+
 
 # 15. Analytical SQL Queries
 
