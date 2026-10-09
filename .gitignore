@@ -10,3 +10,8 @@ __pycache__/
 
 # VS Code
 .vscode/
+
+# Python files
+data/generated/synthetic_transactions.csv
+spark_dataframe_test.py
+spark_test.py
