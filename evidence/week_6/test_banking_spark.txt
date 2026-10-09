@@ -1,0 +1,8 @@
+
+tests/test_banking_spark.py::test_expected_row_count PASSED                                                                                             [ 16%]
+tests/test_banking_spark.py::test_credit_count PASSED                                                                                                   [ 33%]
+tests/test_banking_spark.py::test_credit_total PASSED                                                                                                   [ 50%]
+tests/test_banking_spark.py::test_duplicate_ids PASSED                                                                                                  [ 66%]
+tests/test_banking_spark.py::test_null_values PASSED                                                                                                    [ 83%]
+tests/test_banking_spark.py::test_join_integrity PASSED                                                                                                 [100%]
+

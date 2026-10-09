@@ -1,0 +1,157 @@
+## Part 8
+
+Generator code: src/spark/generate_transactions.py
+It created 100,000 transactions and used all 10 existing account IDs from banking.db.
+
+Output:
+Generated transaction count: 100000                         
+Account IDs used: 10
+Output file: C:\Users\Parth Pawar\Documents\banking_data_pipeline\data\generated\synthetic_transactions.csv
+
+
+
+
+Analysis for 100000 transactions : src/spark/generated_transactions_analysis.py
+
+Output:
+
+Larger Dataset
+Transaction count: 100000                                                       
+Transaction partitions: 2
+
+Sample Transactions:
++--------------+----------+----------------+----------------+-------+--------+--------------------------+
+|transaction_id|account_id|transaction_date|transaction_type|amount |currency|source_file               |
++--------------+----------+----------------+----------------+-------+--------+--------------------------+
+|SYN000001     |A1002     |2026-05-06      |CREDIT          |1485.69|USD     |synthetic_transactions.csv|
+|SYN000002     |A2001     |2026-12-13      |CREDIT          |1475.58|USD     |synthetic_transactions.csv|
+|SYN000003     |A3004     |2026-01-17      |CREDIT          |1185.08|USD     |synthetic_transactions.csv|
+|SYN000004     |A1001     |2026-09-16      |CREDIT          |445.09 |USD     |synthetic_transactions.csv|
+|SYN000005     |A3007     |2026-11-29      |CREDIT          |1126.88|USD     |synthetic_transactions.csv|
++--------------+----------+----------------+----------------+-------+--------+--------------------------+
+only showing top 5 rows
+
+High-Value Transactions
+Threshold: USD 500 or more
+High-value count: 75391
+
+Summary by Transaction Type:
++----------------+-----------------+--------------------+------------------+
+|transaction_type|transaction_count|        total_amount|    average_amount|
++----------------+-----------------+--------------------+------------------+
+|           DEBIT|            49929|4.9920820619999856E7|  999.836179775278|
+|          CREDIT|            50071| 5.038555670999995E7|1006.2822134568902|
++----------------+-----------------+--------------------+------------------+
+
+
+Summary by Account Type:
++------------+-----------------+--------------------+------------------+        
+|account_type|transaction_count|        total_amount|    average_amount|
++------------+-----------------+--------------------+------------------+
+|    CHECKING|            60031|6.0298183959999934E7|1004.4507664373396|
+|     SAVINGS|            39969|4.0008193370000005E7|1000.9805942105132|
++------------+-----------------+--------------------+------------------+
+
+Joined transaction count: 100000      
+
+Because the joined count is still 100,000:
+100000 generated transactions
+        ↓
+join on account_id
+        ↓
+100000 joined transactions
+it confirms that every generated account_id matched an account in the reference data.
+
+
+
+
+
+
+## Part 9 — Spark Execution Concepts
+
+### Partition Inspection
+
+The generated transaction DataFrame contains 100,000 transactions. The number of partitions was inspected using:
+transactions_df.rdd.getNumPartitions()
+
+The result was:
+Transaction count: 100000
+Transaction partitions: 2
+
+
+This means Spark divided the input DataFrame into 2 partitions for processing. 
+Partitions allow Spark to divide a large dataset into smaller pieces that can be processed independently 
+and, when possible, in parallel.
+
+### Transformation
+
+One transformation used in the project is `filter()`:
+
+
+high_value_df = transactions_df.filter(
+    col("amount") >= 500
+)
+
+
+This filters the transaction DataFrame to keep only transactions with an amount of USD 500 or more. 
+`filter()` is a transformation because it creates a new DataFrame from the existing DataFrame.
+
+### Action
+
+One action used in the project is `count()`:
+
+high_value_df.count()
+
+The `count()` operation returns the number of records in the DataFrame. It is an action because 
+it requires Spark to execute the necessary processing and return a result.
+
+Other actions used in the project include `show()`.
+
+
+### Operation That May Cause a Shuffle
+
+The following aggregation may cause a shuffle:
+
+
+transaction_summary_df = transactions_df.groupBy(
+    "transaction_type"
+).agg(
+    count("transaction_id").alias("transaction_count"),
+    sum("amount").alias("total_amount"),
+    avg("amount").alias("average_amount"),
+)
+
+`groupBy()` may cause a shuffle because records with the same `transaction_type` may initially 
+be located in different partitions. Spark may need to move or reorganize data between partitions so that 
+records belonging to the same group can be processed together.
+
+For example, `CREDIT` transactions may exist in both partitions. Spark may need to bring those 
+records together before calculating the total and average for the `CREDIT` group.
+
+### Why Spark Uses Partitions
+
+Spark uses partitions to divide a large dataset into smaller pieces. Each partition can be processed independently, 
+which allows Spark to distribute the work across available processing resources. This makes it possible 
+to process large datasets more efficiently than treating the entire dataset as one large block.
+
+In this project, the 100,000 generated transactions were loaded into 2 partitions.
+
+
+### Lazy Evaluation
+
+Lazy evaluation means that Spark does not immediately execute transformations when they are written.
+
+For example:
+
+high_value_df = transactions_df.filter(
+    col("amount") >= 500
+)
+
+When this transformation is defined, Spark records the operation as part of its execution plan. 
+The actual processing is performed when an action, such as:
+
+high_value_df.count()
+requires the result.
+
+This allows Spark to plan the required operations before executing them.
+

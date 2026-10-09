@@ -1,0 +1,53 @@
+Output: 
+
+Pyspark DataFrame API Summary by Transaction Type:
++----------------+-----------------+--------------------+------------------+    
+|transaction_type|transaction_count|        total_amount|    average_amount|
++----------------+-----------------+--------------------+------------------+
+|           DEBIT|            49929|4.9920820619999856E7|  999.836179775278|
+|          CREDIT|            50071| 5.038555670999995E7|1006.2822134568902|
++----------------+-----------------+--------------------+------------------+
+
+
+Spark SQL Summary by Transaction Type:
++----------------+-----------------+--------------------+------------------+
+|transaction_type|transaction_count|        total_amount|    average_amount|
++----------------+-----------------+--------------------+------------------+
+|           DEBIT|            49929|4.9920820619999856E7|  999.836179775278|
+|          CREDIT|            50071| 5.038555670999995E7|1006.2822134568902|
++----------------+-----------------+--------------------+------------------+
+
+
+## Part 10 — Spark SQL Comparison
+
+A temporary SQL view was created from the generated transaction DataFrame:
+transactions_df.createOrReplaceTempView("transactions")
+
+
+The transaction summary was first calculated using the PySpark DataFrame API:
+transaction_summary_df = transactions_df.groupBy(
+    "transaction_type"
+).agg(
+    count("transaction_id").alias("transaction_count"),
+    sum("amount").alias("total_amount"),
+    avg("amount").alias("average_amount"),
+)
+
+
+The same analysis was then reproduced using Spark SQL:
+
+SELECT
+    transaction_type,
+    COUNT(transaction_id) AS transaction_count,
+    SUM(amount) AS total_amount,
+    AVG(amount) AS average_amount
+FROM transactions
+GROUP BY transaction_type
+
+
+Both approaches produced the same results for CREDIT and DEBIT transactions.
+
+The two versions express the same business operation: summarizing transactions by transaction type and calculating the 
+transaction count, total transaction amount, and average transaction amount. The PySpark DataFrame API expresses the 
+operation using Python methods such as `groupBy()` and `agg()`, while Spark SQL expresses the same operation using SQL 
+syntax such as `SELECT`, aggregate functions, and `GROUP BY`.

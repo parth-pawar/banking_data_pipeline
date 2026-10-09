@@ -1,0 +1,99 @@
+### Part 4
+
+Summary by Transaction Type:
++----------------+-----------------+------------------------+--------------------------+
+|transaction_type|transaction_count|total_transaction_amount|average_transaction_amount|
++----------------+-----------------+------------------------+--------------------------+
+|          CREDIT|               11|                  4060.0|        369.09090909090907|
+|           DEBIT|                9|                   675.5|         75.05555555555556|
++----------------+-----------------+------------------------+--------------------------+
+
+
+Summary by Account:
++----------+-----------------+------------------------+--------------------------+
+|account_id|transaction_count|total_transaction_amount|average_transaction_amount|
++----------+-----------------+------------------------+--------------------------+
+|     A1001|                2|                   670.0|                     335.0|
+|     A1002|                2|                   160.5|                     80.25|
+|     A1007|                2|                   100.0|                      50.0|
+|     A2001|                2|                   955.0|                     477.5|
+|     A2005|                2|                   315.0|                     157.5|
+|     A2007|                2|                    85.0|                      42.5|
+|     A3001|                2|                  1275.0|                     637.5|
+|     A3002|                2|                   310.0|                     155.0|
+|     A3004|                2|                   760.0|                     380.0|
+|     A3007|                2|                   105.0|                      52.5|
++----------+-----------------+------------------------+--------------------------+
+
+
+Summary by Branch:
++---------+---------------+-----------------+------------------------+--------------------------+
+|branch_id|    branch_name|transaction_count|total_transaction_amount|average_transaction_amount|
++---------+---------------+-----------------+------------------------+--------------------------+
+|    BR001|Downtown Branch|                6|                   930.5|        155.08333333333334|
+|    BR002|   North Branch|                6|                  1355.0|        225.83333333333334|
+|    BR003|    Lake Branch|                8|                  2450.0|                    306.25|
++---------+---------------+-----------------+------------------------+--------------------------+
+
+
+
+
+### Part 5
+
+Customers by Total Transaction Amount:
++-----------+--------------+------------------------+                           
+|customer_id| customer_name|total_transaction_amount|
++-----------+--------------+------------------------+
+|      C1005|  Ava Thompson|                  1585.0|
+|      C1003|Sofia Martinez|                  1270.0|
+|      C1006|   Ethan Brown|                   865.0|
+|      C1001|    Maya Patel|                   830.5|
+|      C1002|    Daniel Kim|                   100.0|
+|      C1004| Noah Williams|                    85.0|
++-----------+--------------+------------------------+
+
+
+Transaction Amount Range by Branch:
++---------+---------------+--------------------------+--------------------------+
+|branch_id|    branch_name|minimum_transaction_amount|maximum_transaction_amount|
++---------+---------------+--------------------------+--------------------------+
+|    BR001|Downtown Branch|                      35.0|                     550.0|
+|    BR002|   North Branch|                      25.0|                     900.0|
+|    BR003|    Lake Branch|                      25.0|                    1000.0|
++---------+---------------+--------------------------+--------------------------+
+
+
+High-Value Customer Transactions:
++--------------+--------------+----------+---------------+----------------+------+
+|transaction_id| customer_name|account_id|    branch_name|transaction_type|amount|
++--------------+--------------+----------+---------------+----------------+------+
+|         T1001|    Maya Patel|     A1001|Downtown Branch|          CREDIT| 550.0|
+|         T2001|Sofia Martinez|     A2001|   North Branch|          CREDIT| 900.0|
+|         T3001|  Ava Thompson|     A3001|    Lake Branch|          CREDIT|1000.0|
++--------------+--------------+----------+---------------+----------------+------+
+
+
+Average Transaction Amount by Account Type:
++------------+--------------------------+                                       
+|account_type|average_transaction_amount|
++------------+--------------------------+
+|    CHECKING|         320.4166666666667|
+|     SAVINGS|                  111.3125|
++------------+--------------------------+
+
+
+
+
+## Joins
+
+The banking tables are joined through their foreign-key relationships:
+
+transactions.account_id joins with account.account_id.
+account.customer_id joins with customer.customer_id.
+account.branch_id joins with branch.branch_id.
+
+This creates a combined dataset containing transaction, account, customer, and branch information. 
+The joins are performed in this order because the transactions table does not directly contain customer_id or branch_id; 
+those relationships are reached through the account table.
+
+The joined dataset is then used for customer, branch, and account-type analysis
