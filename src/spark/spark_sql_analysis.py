@@ -1,6 +1,12 @@
+
 from pathlib import Path
 
+from pyspark.sql import functions as F
+
 from src.spark.load_data import create_spark_session
+from src.spark.generated_transactions_analysis import (
+    load_generated_transactions,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -13,46 +19,22 @@ TRANSACTIONS_FILE = (
 )
 
 
-def main():
-    spark = create_spark_session("BankingSparkSQL")
-
-    # Load the generated transactions.
-    transactions_df = (
-        spark.read
-        .option("header", True)
-        .schema(
-            """
-            transaction_id STRING,
-            account_id STRING,
-            transaction_date STRING,
-            transaction_type STRING,
-            amount DOUBLE,
-            currency STRING,
-            source_file STRING
-            """
+def summary_by_transaction_type(transactions):
+    """Summarize transactions using the DataFrame API."""
+    return (
+        transactions.groupBy("transaction_type")
+        .agg(
+            F.count("transaction_id").alias("transaction_count"),
+            F.sum("amount").alias("total_amount"),
+            F.avg("amount").alias("average_amount"),
         )
-        .csv(str(TRANSACTIONS_FILE))
+        .orderBy("transaction_type")
     )
 
-    # Register the DataFrame as a temporary SQL view.
-    transactions_df.createOrReplaceTempView("transactions")
 
-    # DataFrame API version
-    from pyspark.sql.functions import avg, count, sum
-
-    dataframe_summary_df = transactions_df.groupBy(
-        "transaction_type"
-    ).agg(
-        count("transaction_id").alias("transaction_count"),
-        sum("amount").alias("total_amount"),
-        avg("amount").alias("average_amount"),
-    )
-
-    print("\nDataFrame API Summary by Transaction Type:")
-    dataframe_summary_df.show()
-
-    # Spark SQL version
-    sql_summary_df = spark.sql("""
+def summary_by_transaction_type_sql(spark):
+    """Summarize transactions using Spark SQL."""
+    return spark.sql("""
         SELECT
             transaction_type,
             COUNT(transaction_id) AS transaction_count,
@@ -60,12 +42,37 @@ def main():
             AVG(amount) AS average_amount
         FROM transactions
         GROUP BY transaction_type
+        ORDER BY transaction_type
     """)
 
-    print("\nSpark SQL Summary by Transaction Type:")
-    sql_summary_df.show()
 
-    spark.stop()
+def main():
+    spark = create_spark_session("BankingSparkSQL")
+
+    try:
+        # Load the generated transactions.
+        transactions = load_generated_transactions(
+            spark,
+            TRANSACTIONS_FILE,
+        )
+
+        # Register the DataFrame as a temporary SQL view.
+        transactions.createOrReplaceTempView("transactions")
+
+        # DataFrame API version.
+        dataframe_summary = summary_by_transaction_type(transactions)
+
+        print("\nDataFrame API Summary by Transaction Type:")
+        dataframe_summary.show()
+
+        # Spark SQL version.
+        sql_summary = summary_by_transaction_type_sql(spark)
+
+        print("\nSpark SQL Summary by Transaction Type:")
+        sql_summary.show()
+
+    finally:
+        spark.stop()
 
 
 if __name__ == "__main__":

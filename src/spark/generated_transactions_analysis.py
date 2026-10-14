@@ -1,11 +1,14 @@
+
 from pathlib import Path
 
-from pyspark.sql.functions import avg, col, count, sum, to_date
+from pyspark.sql import functions as F
 
 from src.spark.load_data import (
     create_spark_session,
-    load_table_from_sqlite,
+    load_accounts,
 )
+
+from src.spark.transformations import high_value_transactions
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -17,12 +20,19 @@ TRANSACTIONS_FILE = (
     / "synthetic_transactions.csv"
 )
 
+HIGH_VALUE_THRESHOLD = 500.0
 
-def main():
-    spark = create_spark_session("BankingLargerDataAnalysis")
 
-    # Step 1: Load the 100,000 generated transactions.
-    transactions_df = (
+def load_generated_transactions(spark, file_path=TRANSACTIONS_FILE):
+    """Load generated transactions from CSV into a Spark DataFrame."""
+    file_path = Path(file_path)
+
+    if not file_path.is_file():
+        raise FileNotFoundError(
+            f"Generated transactions file not found: {file_path}"
+        )
+
+    transactions = (
         spark.read
         .option("header", True)
         .schema(
@@ -36,85 +46,92 @@ def main():
             source_file STRING
             """
         )
-        .csv(str(TRANSACTIONS_FILE))
+        .csv(str(file_path))
     )
 
-    # Convert the transaction date from a string to a Spark date.
-    transactions_df = transactions_df.withColumn(
+    return transactions.withColumn(
         "transaction_date",
-        to_date(col("transaction_date"), "yyyy-MM-dd"),
+        F.to_date(F.col("transaction_date"), "yyyy-MM-dd"),
     )
 
-    print("\nLarger Dataset")
-    print("Transaction count:", transactions_df.count())
 
-    print(
-    "Transaction partitions:",
-    transactions_df.rdd.getNumPartitions(),
+def summary_by_transaction_type(transactions):
+    """Summarize transaction counts and amounts by transaction type."""
+    return (
+        transactions.groupBy("transaction_type")
+        .agg(
+            F.count("transaction_id").alias("transaction_count"),
+            F.sum("amount").alias("total_amount"),
+            F.avg("amount").alias("average_amount"),
+        )
+        .orderBy("transaction_type")
     )
 
-    print("\nSample Transactions:")
-    transactions_df.show(5, truncate=False)
 
-    # Step 2: Filter transactions of USD 500 or more.
-    high_value_df = transactions_df.filter(
-        col("amount") >= 500
+def join_with_accounts(transactions, accounts):
+    """Join generated transactions with their account reference data."""
+    return transactions.join(
+        accounts,
+        on="account_id",
+        how="inner",
     )
 
-    print("\nHigh-Value Transactions")
-    print("Threshold: USD 500 or more")
-    print("High-value count:", high_value_df.count())
 
-    # Step 3: Aggregate transactions by transaction type.
-    transaction_summary_df = transactions_df.groupBy(
-        "transaction_type"
-    ).agg(
-        count("transaction_id").alias("transaction_count"),
-        sum("amount").alias("total_amount"),
-        avg("amount").alias("average_amount"),
+def summary_by_account_type(joined_transactions):
+    """Summarize transactions by account type."""
+    return (
+        joined_transactions.groupBy("account_type")
+        .agg(
+            F.count("transaction_id").alias("transaction_count"),
+            F.sum("amount").alias("total_amount"),
+            F.avg("amount").alias("average_amount"),
+        )
+        .orderBy("account_type")
     )
 
-    print("\nSummary by Transaction Type:")
-    transaction_summary_df.show()
 
-    # Step 4: Load the existing account reference data.
-    accounts_df = load_table_from_sqlite(
-        spark,
-        "account",
-        [
-            "account_id",
-            "customer_id",
-            "branch_id",
-            "account_type",
-            "account_status",
-        ],
-    )
+def main():
+    spark = create_spark_session("BankingLargerDataAnalysis")
 
-    # Step 5: Join generated transactions with real account records.
-    joined_df = transactions_df.join(
-        accounts_df,
-        "account_id",
-        "inner",
-    )
+    try:
+        # Step 1: Load the generated transactions.
+        transactions = load_generated_transactions(spark)
 
-    # Step 6: Analyse generated transactions by account type.
-    account_type_summary_df = joined_df.groupBy(
-        "account_type"
-    ).agg(
-        count("transaction_id").alias("transaction_count"),
-        sum("amount").alias("total_amount"),
-        avg("amount").alias("average_amount"),
-    )
+        print("\nLarger Dataset")
+        print("Transaction count:", transactions.count())
+        print(
+            "Transaction partitions:",
+            transactions.rdd.getNumPartitions(),
+        )
 
-    print("\nSummary by Account Type:")
-    account_type_summary_df.show()
+        print("\nSample Transactions:")
+        transactions.show(5, truncate=False)
 
-    print(
-        "Joined transaction count:",
-        joined_df.count(),
-    )
+        # Step 2: Identify high-value transactions.
+        high_value = high_value_transactions(transactions)
 
-    spark.stop()
+        print("\nHigh-Value Transactions")
+        print(f"Threshold: USD {HIGH_VALUE_THRESHOLD:.2f} or more")
+        print("High-value count:", high_value.count())
+
+        # Step 3: Summarize transactions by transaction type.
+        print("\nSummary by Transaction Type:")
+        summary_by_transaction_type(transactions).show()
+
+        # Step 4: Load account reference data from SQLite.
+        accounts = load_accounts(spark)
+
+        # Step 5: Join transactions with account records.
+        joined = join_with_accounts(transactions, accounts)
+
+        # Step 6: Summarize transactions by account type.
+        print("\nSummary by Account Type:")
+        summary_by_account_type(joined).show()
+
+        print("Joined transaction count:", joined.count())
+
+    finally:
+        spark.stop()
 
 
 if __name__ == "__main__":

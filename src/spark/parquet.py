@@ -1,108 +1,115 @@
-from pyspark.sql.functions import avg, count, sum
+from pathlib import Path
 
-from src.spark.load_data import create_spark_session, load_table_from_sqlite
+from pyspark.sql import functions as F
+
+from src.spark.load_data import (
+    create_spark_session,
+    load_accounts,
+    load_branches,
+    load_transactions,
+)
 
 
-PROJECT_ROOT = __import__("pathlib").Path(__file__).resolve().parents[2]
-PARQUET_PATH = PROJECT_ROOT / "output" / "spark" / "parquet" / "branch_summary"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PARQUET_PATH = (
+    PROJECT_ROOT
+    / "output"
+    / "spark"
+    / "parquet"
+    / "branch_summary"
+)
+
+
+def create_branch_summary(transactions, accounts, branches):
+    """Create a summary of transactions grouped by branch."""
+    transactions_accounts = transactions.join(
+        accounts,
+        on="account_id",
+        how="inner",
+    )
+
+    joined = transactions_accounts.join(
+        branches,
+        on="branch_id",
+        how="inner",
+    )
+
+    return (
+        joined.groupBy("branch_id", "branch_name")
+        .agg(
+            F.count("transaction_id").alias("transaction_count"),
+            F.sum("amount").alias("total_transaction_amount"),
+            F.avg("amount").alias("average_transaction_amount"),
+        )
+        .orderBy("branch_id")
+    )
+
+
+def write_parquet(dataframe, output_path=PARQUET_PATH):
+    """Write a DataFrame to Parquet, replacing existing output."""
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    dataframe.write.mode("overwrite").parquet(str(output_path))
+
+
+def validate_parquet(spark, output_path, expected_count):
+    """Read Parquet data back and compare its row count."""
+    read_back = spark.read.parquet(str(output_path))
+    read_back_count = read_back.count()
+
+    print("Expected row count:", expected_count)
+    print("Read-back row count:", read_back_count)
+
+    if read_back_count != expected_count:
+        raise ValueError(
+            "Parquet validation failed: "
+            f"expected {expected_count} rows, got {read_back_count}."
+        )
+
+    print("Parquet validation: PASS")
+    return read_back
 
 
 def main():
     spark = create_spark_session("BankingParquet")
 
-    transactions_df = load_table_from_sqlite(
-        spark,
-        "transactions",
-        [
-            "transaction_id",
-            "account_id",
-            "transaction_date",
-            "transaction_type",
-            "amount",
-            "currency",
-            "source_file",
-        ],
-    )
+    try:
+        # Step 1: Load the required SQLite tables.
+        transactions = load_transactions(spark)
+        accounts = load_accounts(spark)
+        branches = load_branches(spark)
 
-    accounts_df = load_table_from_sqlite(
-        spark,
-        "account",
-        [
-            "account_id",
-            "customer_id",
-            "branch_id",
-            "account_type",
-            "account_status",
-        ],
-    )
+        # Step 2: Create the branch summary.
+        branch_summary = create_branch_summary(
+            transactions,
+            accounts,
+            branches,
+        )
 
-    branches_df = load_table_from_sqlite(
-        spark,
-        "branch",
-        [
-            "branch_id",
-            "branch_name",
-            "city",
-            "state",
-        ],
-    )
+        expected_count = branch_summary.count()
 
-    # Join transactions to accounts using account_id.
-    transactions_accounts_df = transactions_df.join(
-        accounts_df,
-        "account_id",
-        "inner",
-    )
+        print("\nBranch Summary:")
+        branch_summary.show()
 
-    # Join branch information using branch_id.
-    joined_df = transactions_accounts_df.join(
-        branches_df,
-        "branch_id",
-        "inner",
-    )
+        print("Expected row count:", expected_count)
 
-    # Create a meaningful analytical DataFrame for Parquet storage.
-    branch_summary_df = joined_df.groupBy(
-        "branch_id",
-        "branch_name",
-    ).agg(
-        count("transaction_id").alias("transaction_count"),
-        sum("amount").alias("total_transaction_amount"),
-        avg("amount").alias("average_transaction_amount"),
-    )
+        # Step 3: Write the summary to Parquet.
+        write_parquet(branch_summary)
+        print("\nParquet write completed.")
 
-    expected_count = branch_summary_df.count()
+        # Step 4: Read the data back and validate it.
+        read_back = validate_parquet(
+            spark,
+            PARQUET_PATH,
+            expected_count,
+        )
 
-    print("\nBranch Summary:")
-    branch_summary_df.show()
+        print("\nRead-Back Data:")
+        read_back.show()
 
-    print("Expected row count:", expected_count)
-
-    # Write the analytical DataFrame to Parquet.
-    branch_summary_df.write.mode("overwrite").parquet(
-        str(PARQUET_PATH)
-    )
-
-    print("\nParquet write completed.")
-
-    # Read the Parquet data back into Spark.
-    read_back_df = spark.read.parquet(
-        str(PARQUET_PATH)
-    )
-
-    read_back_count = read_back_df.count()
-
-    print("Read-back row count:", read_back_count)
-
-    if read_back_count == expected_count:
-        print("Parquet validation: PASS")
-    else:
-        print("Parquet validation: FAIL")
-
-    print("\nRead-Back Data:")
-    read_back_df.show()
-
-    spark.stop()
+    finally:
+        spark.stop()
 
 
 if __name__ == "__main__":

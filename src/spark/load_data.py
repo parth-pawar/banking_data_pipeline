@@ -15,25 +15,37 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATABASE_FILE = PROJECT_ROOT / "database" / "banking.db"
 
 
-def create_spark_session(app_name):
+def create_spark_session(app_name="BankingSpark"):
     """Create and return a local Spark session."""
-    return (
+    spark = (
         SparkSession.builder
         .appName(app_name)
         .master("local[*]")
         .getOrCreate()
     )
+    spark.sparkContext.setLogLevel("ERROR")
+    return spark
 
 
-def load_table_from_sqlite(spark, table_name, columns):
-    """Load a SQLite table into a Spark DataFrame."""
-    connection = sqlite3.connect(DATABASE_FILE)
+def load_table_from_sqlite(spark, table_name, db_path=DATABASE_FILE):
+    """Load an SQLite table into a Spark DataFrame.
 
-    rows = connection.execute(
-        f"SELECT * FROM {table_name}"
-    ).fetchall()
+    The database is opened in read-only mode.
+    A different database path can be supplied for testing.
+    """
+    database_path = Path(db_path).resolve()
 
-    connection.close()
+    if not database_path.is_file():
+        raise FileNotFoundError(
+            f"Database file not found: {database_path}"
+        )
+
+    database_uri = f"{database_path.as_uri()}?mode=ro"
+
+    with sqlite3.connect(database_uri, uri=True) as connection:
+        cursor = connection.execute(f"SELECT * FROM {table_name}")
+        columns = [column[0] for column in cursor.description]
+        rows = cursor.fetchall()
 
     dataframe = spark.createDataFrame(rows, columns)
 
@@ -49,6 +61,26 @@ def load_table_from_sqlite(spark, table_name, columns):
     return dataframe
 
 
+def load_customers(spark, db_path=DATABASE_FILE):
+    """Load customer records."""
+    return load_table_from_sqlite(spark, "customer", db_path)
+
+
+def load_branches(spark, db_path=DATABASE_FILE):
+    """Load branch records."""
+    return load_table_from_sqlite(spark, "branch", db_path)
+
+
+def load_accounts(spark, db_path=DATABASE_FILE):
+    """Load account records."""
+    return load_table_from_sqlite(spark, "account", db_path)
+
+
+def load_transactions(spark, db_path=DATABASE_FILE):
+    """Load transaction records and normalize transaction dates."""
+    return load_table_from_sqlite(spark, "transactions", db_path)
+
+
 def inspect_dataframe(name, dataframe, sample_rows=5):
     """Display sample rows, schema, and row count."""
     print(f"\n{name}:")
@@ -60,60 +92,18 @@ def inspect_dataframe(name, dataframe, sample_rows=5):
 def main():
     spark = create_spark_session("BankingDataLoad")
 
-    customers_df = load_table_from_sqlite(
-        spark,
-        "customer",
-        [
-            "customer_id",
-            "customer_name",
-            "email",
-            "customer_segment",
-        ],
-    )
+    try:
+        dataframes = {
+            "Customers": load_customers(spark),
+            "Branches": load_branches(spark),
+            "Accounts": load_accounts(spark),
+            "Transactions": load_transactions(spark),
+        }
 
-    branches_df = load_table_from_sqlite(
-        spark,
-        "branch",
-        [
-            "branch_id",
-            "branch_name",
-            "city",
-            "state",
-        ],
-    )
-
-    accounts_df = load_table_from_sqlite(
-        spark,
-        "account",
-        [
-            "account_id",
-            "customer_id",
-            "branch_id",
-            "account_type",
-            "account_status",
-        ],
-    )
-
-    transactions_df = load_table_from_sqlite(
-        spark,
-        "transactions",
-        [
-            "transaction_id",
-            "account_id",
-            "transaction_date",
-            "transaction_type",
-            "amount",
-            "currency",
-            "source_file",
-        ],
-    )
-
-    inspect_dataframe("Customers", customers_df)
-    inspect_dataframe("Branches", branches_df)
-    inspect_dataframe("Accounts", accounts_df)
-    inspect_dataframe("Transactions", transactions_df)
-
-    spark.stop()
+        for name, dataframe in dataframes.items():
+            inspect_dataframe(name, dataframe)
+    finally:
+        spark.stop()
 
 
 if __name__ == "__main__":
