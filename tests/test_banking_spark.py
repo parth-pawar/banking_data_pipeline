@@ -1,4 +1,12 @@
-from pyspark.sql.functions import col, count
+from pyspark.sql import functions as F
+
+from src.spark.analytics import summary_by_transaction_type
+from src.spark.data_quality import (
+    count_duplicate_ids,
+    count_nulls,
+    count_orphans,
+)
+from src.spark.transformations import credit_transactions
 
 
 def test_expected_row_count(banking_data):
@@ -10,21 +18,21 @@ def test_expected_row_count(banking_data):
 def test_credit_count(banking_data):
     transactions_df, _ = banking_data
 
-    credit_count = transactions_df.filter(
-        col("transaction_type") == "CREDIT"
-    ).count()
+    credits_df = credit_transactions(transactions_df)
 
-    assert credit_count == 2
+    assert credits_df.count() == 2
 
 
 def test_credit_total(banking_data):
     transactions_df, _ = banking_data
 
+    summary_df = summary_by_transaction_type(transactions_df)
+
     credit_total = (
-        transactions_df
-        .filter(col("transaction_type") == "CREDIT")
-        .agg({"amount": "sum"})
-        .collect()[0][0]
+        summary_df
+        .filter(F.col("transaction_type") == "CREDIT")
+        .select("total_transaction_amount")
+        .first()[0]
     )
 
     assert credit_total == 300.0
@@ -35,17 +43,12 @@ def test_duplicate_ids(banking_data):
 
     # Deliberately add T001 a second time to test duplicate detection.
     duplicate_test_df = transactions_df.union(
-        transactions_df.filter(
-            col("transaction_id") == "T001"
-        )
+        transactions_df.filter(F.col("transaction_id") == "T001")
     )
 
-    duplicate_count = (
-        duplicate_test_df
-        .groupBy("transaction_id")
-        .agg(count("*").alias("occurrence_count"))
-        .filter(col("occurrence_count") > 1)
-        .count()
+    duplicate_count = count_duplicate_ids(
+        duplicate_test_df,
+        "transaction_id",
     )
 
     assert duplicate_count == 1
@@ -54,30 +57,18 @@ def test_duplicate_ids(banking_data):
 def test_null_values(banking_data):
     transactions_df, _ = banking_data
 
-    null_transaction_ids = transactions_df.filter(
-        col("transaction_id").isNull()
-    ).count()
-
-    null_account_ids = transactions_df.filter(
-        col("account_id").isNull()
-    ).count()
-
-    null_amounts = transactions_df.filter(
-        col("amount").isNull()
-    ).count()
-
-    assert null_transaction_ids == 0
-    assert null_account_ids == 0
-    assert null_amounts == 0
+    assert count_nulls(transactions_df, "transaction_id") == 0
+    assert count_nulls(transactions_df, "account_id") == 0
+    assert count_nulls(transactions_df, "amount") == 0
 
 
 def test_join_integrity(banking_data):
     transactions_df, accounts_df = banking_data
 
-    invalid_accounts = transactions_df.join(
+    invalid_accounts = count_orphans(
+        transactions_df,
         accounts_df,
         "account_id",
-        "left_anti",
-    ).count()
+    )
 
     assert invalid_accounts == 0
