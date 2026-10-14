@@ -17,16 +17,15 @@ Expected row count: 3
 Traceback (most recent call last):                                              
   File "<frozen runpy>", line 203, in _run_module_as_main
   File "<frozen runpy>", line 88, in _run_code
-  File "C:\Users\Parth Pawar\Documents\banking_data_pipeline\src\spark\parquet.py", line 109, in <module>
+  File "C:\Users\Parth Pawar\Documents\banking_data_pipeline\src\spark\parquet.py", line 116, in <module>
     main()
     ~~~~^^
-  File "C:\Users\Parth Pawar\Documents\banking_data_pipeline\src\spark\parquet.py", line 82, in main
-    branch_summary_df.write.mode("overwrite").parquet(
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
-        str(PARQUET_PATH)
-        ^^^^^^^^^^^^^^^^^
-    )
-    ^
+  File "C:\Users\Parth Pawar\Documents\banking_data_pipeline\src\spark\parquet.py", line 98, in main
+    write_parquet(branch_summary)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "C:\Users\Parth Pawar\Documents\banking_data_pipeline\src\spark\parquet.py", line 53, in write_parquet
+    dataframe.write.mode("overwrite").parquet(str(output_path))
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
   File "C:\Users\Parth Pawar\Documents\banking_data_pipeline\.venv\Lib\site-packages\pyspark\sql\readwriter.py", line 2093, in parquet
     self._jwrite.parquet(path)
     ~~~~~~~~~~~~~~~~~~~~^^^^^^
@@ -39,7 +38,7 @@ Traceback (most recent call last):
     raise Py4JJavaError(
         "An error occurred while calling {0}{1}{2}.\n".
         format(target_id, ".", name), value)
-py4j.protocol.Py4JJavaError: An error occurred while calling o120.parquet.
+py4j.protocol.Py4JJavaError: An error occurred while calling o125.parquet.
 : java.lang.RuntimeException: java.io.FileNotFoundException: java.io.FileNotFoundException: HADOOP_HOME and hadoop.home.dir are unset. -see https://cwiki.apache.org/confluence/display/HADOOP2/WindowsProblems
         at org.apache.hadoop.util.Shell.getWinUtilsPath(Shell.java:790)
         at org.apache.hadoop.util.Shell.getSetPermissionCommand(Shell.java:299)
@@ -47,10 +46,6 @@ py4j.protocol.Py4JJavaError: An error occurred while calling o120.parquet.
         at org.apache.hadoop.fs.RawLocalFileSystem.setPermission(RawLocalFileSystem.java:1179)
         at org.apache.hadoop.fs.RawLocalFileSystem.mkOneDirWithMode(RawLocalFileSystem.java:861)
         at org.apache.hadoop.fs.RawLocalFileSystem.mkdirsWithOptionalPermission(RawLocalFileSystem.java:901)
-        at org.apache.hadoop.fs.RawLocalFileSystem.mkdirs(RawLocalFileSystem.java:873)
-        at org.apache.hadoop.fs.RawLocalFileSystem.mkdirsWithOptionalPermission(RawLocalFileSystem.java:900)
-        at org.apache.hadoop.fs.RawLocalFileSystem.mkdirs(RawLocalFileSystem.java:873)
-        at org.apache.hadoop.fs.RawLocalFileSystem.mkdirsWithOptionalPermission(RawLocalFileSystem.java:900)
         at org.apache.hadoop.fs.RawLocalFileSystem.mkdirs(RawLocalFileSystem.java:873)
         at org.apache.hadoop.fs.RawLocalFileSystem.mkdirsWithOptionalPermission(RawLocalFileSystem.java:900)
         at org.apache.hadoop.fs.RawLocalFileSystem.mkdirs(RawLocalFileSystem.java:873)

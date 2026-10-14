@@ -1,6 +1,6 @@
 
 Customers:
-+-----------+--------------+--------------------+----------------+
++-----------+--------------+--------------------+----------------+              
 |customer_id| customer_name|               email|customer_segment|
 +-----------+--------------+--------------------+----------------+
 |      C1001|    Maya Patel|maya.patel@exampl...|          RETAIL|
@@ -53,7 +53,7 @@ root
  |-- account_type: string (nullable = true)
  |-- account_status: string (nullable = true)
 
-Accounts count: 10
+Accounts count: 10                                                              
 
 Transactions:
 +--------------+----------+----------------+----------------+------+--------+--------------------+
@@ -75,7 +75,7 @@ root
  |-- currency: string (nullable = true)
  |-- source_file: string (nullable = true)
 
-Transactions count: 20                                                          
+Transactions count: 20                                                                             
 
 
 SQLite stores the dates as strings, and the source contains multiple formats (yyyy-MM-dd and M/d/yyyy).

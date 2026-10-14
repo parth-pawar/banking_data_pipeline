@@ -1,10 +1,14 @@
-
 Data Quality Checks:
+PASS: Null transaction IDs - 0 bad record(s)
+PASS: Null account IDs - 0 bad record(s)
+PASS: Null transaction amounts - 0 bad record(s)
+PASS: Duplicate transaction IDs - 0 bad record(s)
+PASS: Transactions with nonexistent accounts - 0 bad record(s)
+PASS: Accounts with nonexistent customers - 0 bad record(s)
+PASS: Accounts with nonexistent branches - 0 bad record(s)
+PASS: Negative transaction amounts - 0 bad record(s)
 
-Null transaction IDs: PASS - 0 bad records                                      
-Null account IDs: PASS - 0 bad records                                          
-Null amounts: PASS - 0 bad records                                              
-Duplicate transaction IDs: PASS - 0 duplicate IDs                               
-Transactions with nonexistent accounts: PASS - 0 bad records                    
-Accounts with nonexistent customers: PASS - 0 bad records                       
-Accounts with nonexistent branches: PASS - 0 bad records  
+Checks passed: 8/8
+Checks failed: 0/8
+
+All data-quality checks passed.

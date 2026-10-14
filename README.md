@@ -929,6 +929,7 @@ This file contains approximately 100,000 synthetic transactions.
 
 ## 23.3 Loading Banking Data into Spark
 
+The loading functions are reusable and accept an optional database path, allowing tests to load data from an isolated temporary database. The production database is opened in read-only mode so the Spark loading process does not modify the operational database.
 The main Spark loading code is:
 
 ```text

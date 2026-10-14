@@ -16,7 +16,7 @@ Analysis for 100000 transactions : src/spark/generated_transactions_analysis.py
 Output:
 
 Larger Dataset
-Transaction count: 100000                                                       
+Transaction count: 100000
 Transaction partitions: 2
 
 Sample Transactions:
@@ -32,15 +32,15 @@ Sample Transactions:
 only showing top 5 rows
 
 High-Value Transactions
-Threshold: USD 500 or more
+Threshold: USD 500.00 or more
 High-value count: 75391
 
 Summary by Transaction Type:
 +----------------+-----------------+--------------------+------------------+
 |transaction_type|transaction_count|        total_amount|    average_amount|
 +----------------+-----------------+--------------------+------------------+
-|           DEBIT|            49929|4.9920820619999856E7|  999.836179775278|
 |          CREDIT|            50071| 5.038555670999995E7|1006.2822134568902|
+|           DEBIT|            49929|4.9920820619999856E7|  999.836179775278|
 +----------------+-----------------+--------------------+------------------+
 
 
@@ -66,92 +66,103 @@ it confirms that every generated account_id matched an account in the reference 
 
 
 
-
 ## Part 9 — Spark Execution Concepts
 
 ### Partition Inspection
 
 The generated transaction DataFrame contains 100,000 transactions. The number of partitions was inspected using:
-transactions_df.rdd.getNumPartitions()
+
+transactions.rdd.getNumPartitions()
+
 
 The result was:
+
 Transaction count: 100000
 Transaction partitions: 2
 
 
-This means Spark divided the input DataFrame into 2 partitions for processing. 
-Partitions allow Spark to divide a large dataset into smaller pieces that can be processed independently 
-and, when possible, in parallel.
+This means Spark divided the input DataFrame into 2 partitions for processing. Partitions allow Spark to divide a 
+dataset into smaller pieces that can be processed independently and, when possible, in parallel.
 
 ### Transformation
 
 One transformation used in the project is `filter()`:
 
-
-high_value_df = transactions_df.filter(
-    col("amount") >= 500
-)
+high_value = high_value_transactions(transactions)
+The `high_value_transactions()` function imported from `transformations.py` uses the following filter:
 
 
-This filters the transaction DataFrame to keep only transactions with an amount of USD 500 or more. 
-`filter()` is a transformation because it creates a new DataFrame from the existing DataFrame.
+return transactions.filter(F.col("amount") >= threshold)
+
+The default threshold is USD 500. This keeps transactions whose amount is USD 500 or more.
+
+`filter()` is a transformation because it creates a new DataFrame from the existing DataFrame without immediately 
+executing the full computation.
 
 ### Action
 
 One action used in the project is `count()`:
 
-high_value_df.count()
 
-The `count()` operation returns the number of records in the DataFrame. It is an action because 
-it requires Spark to execute the necessary processing and return a result.
+high_value.count()
 
-Other actions used in the project include `show()`.
 
+The `count()` operation returns the number of records in the DataFrame. It is an action because Spark executes the 
+necessary processing to return the result.
+
+Other actions used in the project include `show()`, which displays rows from a DataFrame.
 
 ### Operation That May Cause a Shuffle
 
-The following aggregation may cause a shuffle:
+The following aggregation is used in the project:
+
+transaction_summary_df = summary_by_transaction_type(transactions)
 
 
-transaction_summary_df = transactions_df.groupBy(
-    "transaction_type"
-).agg(
-    count("transaction_id").alias("transaction_count"),
-    sum("amount").alias("total_amount"),
-    avg("amount").alias("average_amount"),
+The function performs this aggregation:
+
+
+return (
+    transactions.groupBy("transaction_type")
+    .agg(
+        F.count("transaction_id").alias("transaction_count"),
+        F.sum("amount").alias("total_amount"),
+        F.avg("amount").alias("average_amount"),
+    )
+    .orderBy("transaction_type")
 )
 
-`groupBy()` may cause a shuffle because records with the same `transaction_type` may initially 
-be located in different partitions. Spark may need to move or reorganize data between partitions so that 
-records belonging to the same group can be processed together.
 
-For example, `CREDIT` transactions may exist in both partitions. Spark may need to bring those 
-records together before calculating the total and average for the `CREDIT` group.
+`groupBy()` may cause a shuffle because records with the same `transaction_type` can initially be located in 
+different partitions. Spark may need to redistribute data between partitions so that records belonging to the same 
+group can be aggregated together.
+
+For example, `CREDIT` transactions may exist in both partitions. Spark combines the relevant partial results to calculate 
+the count, total amount, and average for the `CREDIT` group.
+
+The `orderBy()` operation may also require a shuffle because Spark must arrange the results in the requested order.
 
 ### Why Spark Uses Partitions
 
-Spark uses partitions to divide a large dataset into smaller pieces. Each partition can be processed independently, 
-which allows Spark to distribute the work across available processing resources. This makes it possible 
-to process large datasets more efficiently than treating the entire dataset as one large block.
+Spark uses partitions to divide a dataset into smaller pieces. Each partition can be processed independently, allowing 
+Spark to distribute work across available processing resources.
 
-In this project, the 100,000 generated transactions were loaded into 2 partitions.
-
+In this project, the 100,000 generated transactions were loaded into 2 partitions. The number of partitions can affect 
+parallelism and performance, although more partitions do not automatically mean faster processing.
 
 ### Lazy Evaluation
 
-Lazy evaluation means that Spark does not immediately execute transformations when they are written.
+Lazy evaluation means Spark does not immediately execute transformations when they are defined.
 
 For example:
+high_value = high_value_transactions(transactions)
 
-high_value_df = transactions_df.filter(
-    col("amount") >= 500
-)
 
 When this transformation is defined, Spark records the operation as part of its execution plan. 
-The actual processing is performed when an action, such as:
+The actual computation is triggered when an action, such as the following, requires the result:
 
-high_value_df.count()
-requires the result.
 
-This allows Spark to plan the required operations before executing them.
+high_value.count()
 
+
+This allows Spark to plan and optimize the required operations before executing them.

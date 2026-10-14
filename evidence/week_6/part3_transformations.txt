@@ -1,3 +1,4 @@
+
 CREDIT Transactions:
 +--------------+----------+----------------+----------------+------+--------+--------------------+
 |transaction_id|account_id|transaction_date|transaction_type|amount|currency|         source_file|
@@ -26,7 +27,7 @@ High-Value Transactions:
 |         T3001|     A3001|      2026-09-06|          CREDIT|1000.0|     USD|data/raw\BR003_20...|
 +--------------+----------+----------------+----------------+------+--------+--------------------+
 
-High-value transaction count: 3                                                 
+High-value transaction count (>= 500.0): 3                                      
 
 Transaction Reporting Dataset:
 +--------------+----------+----------------+----------------+------+--------+   
@@ -91,7 +92,6 @@ root
  |-- amount: double (nullable = true)
  |-- currency: string (nullable = true)
  |-- transaction_value_category: string (nullable = false)
-
 
  High-value threshold: Transactions with an amount of USD 500 or more are classified as high-value for this project. 
  This threshold was selected as a simple project-level rule to demonstrate value-based filtering and categorization.
