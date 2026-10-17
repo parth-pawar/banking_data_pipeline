@@ -1,0 +1,4 @@
+﻿branch_id,branch_name,minimum_transaction_amount,maximum_transaction_amount
+BR001,Downtown Branch,35.0,550.0
+BR002,North Branch,25.0,900.0
+BR003,Lake Branch,25.0,1000.0

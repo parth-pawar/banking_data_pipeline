@@ -1,0 +1,4 @@
+﻿transaction_id,customer_name,account_id,branch_name,transaction_type,amount
+T1001,Maya Patel,A1001,Downtown Branch,CREDIT,550.0
+T2001,Sofia Martinez,A2001,North Branch,CREDIT,900.0
+T3001,Ava Thompson,A3001,Lake Branch,CREDIT,1000.0

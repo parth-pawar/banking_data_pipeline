@@ -1,0 +1,4 @@
+﻿transaction_id,account_id,transaction_date,transaction_type,amount,currency,source_file
+T1001,A1001,2026-09-06,CREDIT,550.0,USD,transactions_20260908.csv
+T2001,A2001,2026-09-06,CREDIT,900.0,USD,data/raw\BR002_20260906_TRANSACTION.csv
+T3001,A3001,2026-09-06,CREDIT,1000.0,USD,data/raw\BR003_20260906_TRANSACTION.csv

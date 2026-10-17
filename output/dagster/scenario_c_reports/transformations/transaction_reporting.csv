@@ -1,0 +1,2 @@
+﻿transaction_id,account_id,transaction_date,transaction_type,amount,currency,transaction_value_category
+T_VALID_001,A_TEST,2026-10-15,CREDIT,50.0,USD,NORMAL

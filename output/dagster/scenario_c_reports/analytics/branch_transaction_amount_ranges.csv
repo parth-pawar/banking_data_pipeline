@@ -1,0 +1,2 @@
+﻿branch_id,branch_name,minimum_transaction_amount,maximum_transaction_amount
+B_TEST,Test Branch,50.0,50.0
