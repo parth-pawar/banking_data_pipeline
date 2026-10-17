@@ -1,0 +1,48 @@
+# Airflow vs Dagster — Comparison
+
+## 1. Overview
+
+Apache Airflow and Dagster are workflow orchestration tools used to schedule, execute, monitor, and manage data pipelines.
+Both help organize pipeline tasks and identify failures.
+
+## 2. Key Differences
+
+| Feature               | Apache Airflow                                                               | Dagster |
+
+| Main concept          | DAG (Directed Acyclic Graph)                                                 | Software-defined assets and ops/jobs |
+| Workflow definition   | Tasks connected in a DAG                                                     | Ops connected in a job, or assets with dependencies |
+| Task execution        | Tasks are executed by Airflow operators                                      | Ops execute individual units of work |
+| Scheduling            | Uses schedules managed by the scheduler                                      | Uses schedules managed by the Dagster daemon |
+| Retries               | Configured through task arguments such as `retries` and `retry_delay`        | Configured using an op's `RetryPolicy` |
+| Monitoring            | Web UI shows DAG runs, task states, logs, and history                        | Web UI shows job runs, op states, logs, and execution events |
+| Data awareness        | Primarily focuses on workflow and task orchestration                         | Provides additional support for modeling and tracking data assets |
+| Typical use           | Scheduled ETL workflows and general task orchestration                       | Data pipelines where data assets, dependencies, and observability are important |
+
+
+## 3. Application to the Banking Pipeline
+
+In this project, Dagster orchestrates the banking pipeline through the following stages:
+
+1. Extract data from SQLite.
+2. Validate transactions and related records.
+3. Run the existing PySpark transformations.
+4. Generate transaction, customer, branch, and account-type analytics.
+5. Publish the CSV reports.
+
+Each stage is represented by an op, and dependencies determine the execution order. If validation fails, the dependent processing and report-publishing stages do 
+not run.
+
+The extraction and report-publishing ops also have retry policies to handle certain temporary failures.
+
+
+## 4. Why Dagster Was Used
+
+Dagster was used to organize the existing banking pipeline into observable, testable operations without duplicating the existing business logic. 
+It provides execution logs, failure details, configurable retries, and a UI for monitoring runs.
+
+The daily schedule is configured but stopped by default, so the pipeline does not run automatically unless the schedule is deliberately enabled.
+
+
+## 5. Conclusion
+
+Both Airflow and Dagster can orchestrate reliable data pipelines. Airflow is widely used for general DAG-based workflow orchestration, while Dagster offers a strong focus on data assets and data-pipeline observability. The choice depends on the project's requirements, team familiarity, and operational needs.

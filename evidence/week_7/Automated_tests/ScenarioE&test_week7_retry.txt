@@ -1,0 +1,10 @@
+Run using: python -m pytest tests/test_week7_retry.py -v -s
+
+
+RUN_SUCCESS - Finished execution of run for "retry_extraction_job".     PASSED
+
+Scenario E verifies Dagster’s retry mechanism by simulating a temporary failure during SQLite data extraction. 
+The extract_sqlite operation is configured to allow up to two retries with a five-second delay. 
+The test uses an isolated SQLite test database and temporarily modifies the loading function to raise an error on its 
+first call, then uses the original function on subsequent attempts. The test passed, confirming that Dagster retried 
+the operation and the job eventually succeeded. The primary banking database remained unchanged.

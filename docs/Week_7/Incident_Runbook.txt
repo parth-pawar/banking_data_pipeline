@@ -1,0 +1,80 @@
+BANKING DATA PIPELINE — INCIDENT RUNBOOK
+Week 7: Dagster Orchestration
+
+1. PURPOSE
+
+This runbook explains how to identify, troubleshoot, and recover from failures in the banking data pipeline orchestrated by Dagster.
+
+2. SYMPTOM
+
+The pipeline run is marked as FAILURE in Dagster. One or more operations may fail, and the expected CSV reports may not be published or refreshed.
+
+3. DETECTION
+
+- Open the Dagster UI and inspect the failed run.
+- Identify the operation that failed and read its error message.
+- Check the application log at output/logs/week7_pipeline.log.
+- Review the data-quality check results and the counts of affected records.
+- Confirm which reports were generated before the failure.
+
+4. LIKELY CAUSES
+
+A. Data-quality failure
+A transaction may reference a nonexistent account, or the source data may contain null IDs, duplicate transaction IDs, or negative amounts.
+
+B. Database or extraction failure
+The database file may be missing, inaccessible, temporarily locked, or contain an unexpected schema.
+
+C. Transformation or analytics failure
+Spark may fail while processing the source data, or an unexpected input may cause an operation to fail.
+
+D. Report-publishing failure
+A report may fail to write because of a filesystem permission issue, a temporary I/O problem, or an inaccessible output directory.
+
+5. RECOVERY PROCEDURE
+
+1. Identify the failed operation and read its error details.
+2. Determine whether the failure is caused by invalid data, an environmental problem, or a code issue.
+3. For data-quality failures, correct the source data or resolve the invalid reference.
+4. For database or filesystem failures, verify the paths, permissions, file availability, and database accessibility.
+5. For code or Spark failures, preserve the logs and investigate the error before rerunning.
+6. Run the relevant validation or isolated test to confirm that the issue is resolved.
+
+6. SAFE RERUN
+
+- Do not modify or overwrite database/banking.db while troubleshooting.
+- Use an isolated test database for failure and recovery tests.
+- Correct the underlying cause before rerunning the pipeline.
+- Check the output/dagster/reports directory and confirm that the reports contain the expected data.
+- Verify report row counts and ensure reruns do not append duplicate rows.
+- The current publisher replaces individual CSV files using temporary files, but the full set of reports is not published as one atomic transaction. 
+  If publishing fails partway through, inspect the outputs before relying on them.
+
+7. RETRIES
+
+The extract_sqlite and publish_reports operations have Dagster retry policies allowing up to two retries, with a five-second delay between attempts.
+
+Retries may help with temporary failures, but they do not correct invalid data, missing files, or incorrect schemas. The publish_reports operation retries the entire 
+operation, so check the logs and report outputs if repeated attempts fail.
+
+Scenario E uses a simulated temporary SQLite-loader failure to verify that Dagster retries extraction and the job subsequently succeeds.
+
+8. ESCALATION AND LIMITATIONS
+
+If the pipeline continues to fail after the cause has been investigated:
+
+- Stop repeated reruns that are unlikely to resolve the problem.
+- Preserve the Dagster run details, application logs, and relevant error messages.
+- Record the affected database and report paths.
+- Escalate unresolved code, infrastructure, or data issues to the project lead.
+
+Known limitations:
+- Spark operations can take several minutes to execute.
+- Report files are replaced individually rather than committed as one atomic batch.
+- Retry handling does not guarantee recovery from permanent failures.
+- The daily schedule is configured as STOPPED by default and must be deliberately enabled when scheduling is required.
+
+9. POST-RECOVERY CHECK
+
+Confirm that the Dagster run succeeded, validation passed, the expected reports were generated, and the report contents and row counts are correct. 
+Record the incident and its resolution if further investigation may be needed.

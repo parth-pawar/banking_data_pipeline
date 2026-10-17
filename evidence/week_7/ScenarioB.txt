@@ -1,0 +1,64 @@
+Source: test/data/scenario_b.db
+Run: python test/data/run_scenario_b.py     
+
+========== SCENARIO B RESULTS ==========
+Overall run successful: False
+Failed steps: {'validate_banking_data'}
+Successful steps: ['extract_sqlite']
+Publish step started: False
+
+
+Logs:
+
+2026-10-15T15:15:03+05:30 | [START] SQLite extraction
+2026-10-15T15:16:08+05:30 | [INFO] customers: 1 rows
+2026-10-15T15:17:38+05:30 | [INFO] branches: 1 rows
+2026-10-15T15:18:53+05:30 | [INFO] accounts: 1 rows
+2026-10-15T15:20:16+05:30 | [INFO] transactions: 2 rows
+2026-10-15T15:21:00+05:30 | [END] SQLite extraction | status=SUCCESS
+2026-10-15T15:21:01+05:30 | [START] Data-quality validation
+2026-10-15T15:24:29+05:30 | [CHECK] Null transaction IDs | status=PASS | issues=0
+2026-10-15T15:24:29+05:30 | [CHECK] Null account IDs | status=PASS | issues=0
+2026-10-15T15:24:29+05:30 | [CHECK] Null transaction amounts | status=PASS | issues=0
+2026-10-15T15:24:29+05:30 | [CHECK] Duplicate transaction IDs | status=PASS | issues=0
+2026-10-15T15:24:29+05:30 | [CHECK] Transactions with nonexistent accounts | status=FAIL | issues=1
+2026-10-15T15:24:29+05:30 | [CHECK] Accounts with nonexistent customers | status=PASS | issues=0
+2026-10-15T15:24:29+05:30 | [CHECK] Accounts with nonexistent branches | status=PASS | issues=0
+2026-10-15T15:24:29+05:30 | [CHECK] Negative transaction amounts | status=PASS | issues=0
+2026-10-15T15:24:29+05:30 | [ERROR] Data-quality validation: ValueError: Data-quality validation failed: Transactions with nonexistent accounts: 1 bad record(s)
+2026-10-15T15:24:29+05:30 | [END] Data-quality validation | status=FAILURE
+
+
+test-data: test\data\scenario_b.db
+
+Displaying DataFrame: customers
++-----------+-------------+----------------+----------------+                   
+|customer_id|customer_name|email           |customer_segment|
++-----------+-------------+----------------+----------------+
+|C_TEST     |Test Customer|test@example.com|STANDARD        |
++-----------+-------------+----------------+----------------+
+
+
+Displaying DataFrame: branches
++---------+-----------+----+-----------+                                        
+|branch_id|branch_name|city|state      |
++---------+-----------+----+-----------+
+|B_TEST   |Test Branch|Pune|Maharashtra|
++---------+-----------+----+-----------+
+
+
+Displaying DataFrame: accounts
++----------+-----------+---------+------------+--------------+                  
+|account_id|customer_id|branch_id|account_type|account_status|
++----------+-----------+---------+------------+--------------+
+|A_TEST    |C_TEST     |B_TEST   |CHECKING    |ACTIVE        |
++----------+-----------+---------+------------+--------------+
+
+
+Displaying DataFrame: transactions
++--------------+----------+----------------+----------------+------+--------+-------------------+
+|transaction_id|account_id|transaction_date|transaction_type|amount|currency|source_file        |
++--------------+----------+----------------+----------------+------+--------+-------------------+
+|T_VALID_001   |A_TEST    |2026-10-15      |CREDIT          |50.0  |USD     |scenario_b_test.csv|
+|T_BAD_ACCOUNT |A_MISSING |2026-10-15      |CREDIT          |100.0 |USD     |scenario_b_test.csv|
++--------------+----------+----------------+----------------+------+--------+-------------------+

@@ -1,0 +1,20 @@
+--- For valid data and bad data case: 
+
+Run using: python -m pytest tests/test_week7_banking_logic.py::test_week7_valid_banking_data_passes tests/test_week7_banking_logic.py::test_week7_bad_banking_data_fails -v -s
+
+tests/test_week7_banking_logic.py::test_week7_valid_banking_data_passes PASSED                                                         [ 50%]
+tests/test_week7_banking_logic.py::test_week7_bad_banking_data_fails PASSED                                                            [100%]
+
+
+--- For safe rerun which also tests the actual Dagster job
+
+Run using: python -m pytest tests/test_week7_banking_logic.py::test_week7_safe_rerun_does_not_duplicate_reports -v -s  
+
+tests/test_week7_banking_logic.py::test_week7_safe_rerun_does_not_duplicate_reports PASSED                                             [100%]
+
+
+--- Dagster failure-path test
+
+Run using: python -m pytest tests/test_week7_banking_logic.py::test_week7_validation_failure_skips_report_publishing -v -s
+
+tests/test_week7_banking_logic.py::test_week7_validation_failure_skips_report_publishing PASSED                                        [100%]

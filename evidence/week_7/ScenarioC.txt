@@ -1,0 +1,74 @@
+Source: test/data/scenario_c.db
+Run: python test/data/run_scenario_c.py    
+
+Scenario C test database was created by copying the Scenario B test database and removing the transaction with the invalid account reference.
+This preserved Scenario B as the original failure case while allowing Scenario C to demonstrate successful recovery after 
+correcting the data.
+
+
+========== SCENARIO C RESULTS ==========
+Overall run successful: True
+Failed steps: set()
+Test report directory: C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports
+
+Logs:
+
+2026-10-15T16:01:37+05:30 | [START] SQLite extraction
+2026-10-15T16:02:33+05:30 | [INFO] customers: 1 rows
+2026-10-15T16:03:57+05:30 | [INFO] branches: 1 rows
+2026-10-15T16:05:23+05:30 | [INFO] accounts: 1 rows
+2026-10-15T16:06:57+05:30 | [INFO] transactions: 1 rows
+2026-10-15T16:07:41+05:30 | [END] SQLite extraction | status=SUCCESS
+2026-10-15T16:07:42+05:30 | [START] Data-quality validation
+2026-10-15T16:15:22+05:30 | [CHECK] Null transaction IDs | status=PASS | issues=0
+2026-10-15T16:15:22+05:30 | [CHECK] Null account IDs | status=PASS | issues=0
+2026-10-15T16:15:22+05:30 | [CHECK] Null transaction amounts | status=PASS | issues=0
+2026-10-15T16:15:22+05:30 | [CHECK] Duplicate transaction IDs | status=PASS | issues=0
+2026-10-15T16:15:22+05:30 | [CHECK] Transactions with nonexistent accounts | status=PASS | issues=0
+2026-10-15T16:15:22+05:30 | [CHECK] Accounts with nonexistent customers | status=PASS | issues=0
+2026-10-15T16:15:22+05:30 | [CHECK] Accounts with nonexistent branches | status=PASS | issues=0
+2026-10-15T16:15:22+05:30 | [CHECK] Negative transaction amounts | status=PASS | issues=0
+2026-10-15T16:15:22+05:30 | [END] Data-quality validation | status=SUCCESS
+2026-10-15T16:15:23+05:30 | [START] Account-type analytics
+2026-10-15T16:18:19+05:30 | [INFO] average_by_account_type.csv: 1 rows
+2026-10-15T16:21:07+05:30 | [END] Account-type analytics | status=SUCCESS
+2026-10-15T16:24:09+05:30 | [START] Branch analytics
+2026-10-15T16:27:06+05:30 | [INFO] branch_transaction_amount_ranges.csv: 1 rows
+2026-10-15T16:28:05+05:30 | [END] Branch analytics | status=SUCCESS
+2026-10-15T16:29:03+05:30 | [START] Customer analytics
+2026-10-15T16:30:06+05:30 | [INFO] customer_transaction_totals.csv: 1 rows
+2026-10-15T16:32:55+05:30 | [INFO] high_value_customer_transactions.csv: 0 rows
+2026-10-15T16:34:27+05:30 | [END] Customer analytics | status=SUCCESS
+2026-10-15T16:34:28+05:30 | [START] Transaction and account analytics
+2026-10-15T16:34:42+05:30 | [INFO] transaction_type_summary.csv: 1 rows
+2026-10-15T16:35:19+05:30 | [INFO] account_summary.csv: 1 rows
+2026-10-15T16:35:42+05:30 | [END] Transaction and account analytics | status=SUCCESS
+2026-10-15T16:35:43+05:30 | [START] Transformations
+2026-10-15T16:35:56+05:30 | [INFO] credit_transactions.csv: 1 rows
+2026-10-15T16:36:32+05:30 | [INFO] high_value_transactions.csv: 0 rows
+2026-10-15T16:37:07+05:30 | [INFO] reporting_columns.csv: 1 rows
+2026-10-15T16:37:43+05:30 | [INFO] transactions_with_value_category.csv: 1 rows
+2026-10-15T16:38:18+05:30 | [INFO] transaction_reporting.csv: 1 rows
+2026-10-15T16:38:42+05:30 | [END] Transformations | status=SUCCESS
+2026-10-15T16:38:43+05:30 | [START] Publish reports
+2026-10-15T16:38:55+05:30 | [INFO] customers.csv: 1 rows
+2026-10-15T16:39:19+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\load\customers.csv | rows=1
+2026-10-15T16:39:31+05:30 | [INFO] branches.csv: 1 rows
+2026-10-15T16:39:55+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\load\branches.csv | rows=1
+2026-10-15T16:40:07+05:30 | [INFO] accounts.csv: 1 rows
+2026-10-15T16:40:30+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\load\accounts.csv | rows=1
+2026-10-15T16:40:42+05:30 | [INFO] transactions.csv: 1 rows
+2026-10-15T16:41:06+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\load\transactions.csv | rows=1
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\transformations\credit_transactions.csv | rows=1
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\transformations\high_value_transactions.csv | rows=0
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\transformations\reporting_columns.csv | rows=1
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\transformations\transactions_with_value_category.csv | rows=1
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\transformations\transaction_reporting.csv | rows=1
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\analytics\transaction_type_summary.csv | rows=1
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\analytics\account_summary.csv | rows=1
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\analytics\customer_transaction_totals.csv | rows=1
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\analytics\high_value_customer_transactions.csv | rows=0
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\analytics\branch_transaction_amount_ranges.csv | rows=1
+2026-10-15T16:41:07+05:30 | [REPORT] C:\Users\Parth Pawar\Documents\banking_data_pipeline\output\dagster\scenario_c_reports\analytics\average_by_account_type.csv | rows=1
+2026-10-15T16:41:07+05:30 | [END] Publish reports | status=SUCCESS | reports=15
+
