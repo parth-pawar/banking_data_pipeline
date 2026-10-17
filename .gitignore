@@ -15,3 +15,6 @@ __pycache__/
 data/generated/synthetic_transactions.csv
 spark_dataframe_test.py
 spark_test.py
+
+# Dagster
+.dagster_home/

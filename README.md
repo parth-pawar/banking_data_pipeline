@@ -1445,3 +1445,206 @@ This introduces concepts such as:
 * Spark execution plans
 
 Therefore, the business logic remained mostly the same, while the way the data is processed changed because Spark is the processing engine.
+
+
+# 25 Orchestration — Week 7
+
+## 1. Overview
+
+This project extends the existing banking data pipeline with **Dagster** for workflow orchestration. It reuses the existing PySpark transformations, analytics, and data-quality validation logic instead of duplicating business logic.
+
+The pipeline extracts banking data from SQLite, validates the data, performs transformations and analytics, and publishes CSV reports.
+
+### Pipeline workflow
+
+1. Extract customers, branches, accounts, and transactions from SQLite.
+2. Validate data quality, including null IDs, duplicate transaction IDs, negative amounts, and transactions referencing nonexistent accounts.
+3. Apply the existing PySpark transformations.
+4. Generate transaction, customer, branch, and account-type analytics.
+5. Publish the generated results as CSV reports.
+
+If validation fails, the dependent processing and report-publishing operations do not execute.
+
+## 2. Prerequisites
+
+Install or configure the following:
+
+- Python 3.13
+- Java compatible with the installed PySpark version
+- PySpark 4.2.0
+- Dagster 1.13.26
+
+Verify the installed versions:
+
+```powershell
+python --version
+java -version
+python -m pip show dagster
+python -m pip show pyspark
+```
+
+## 3. Setup
+
+Open PowerShell in the project root.
+
+### Step 1: Activate the virtual environment
+
+If the project already has a `.venv` environment:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+If a virtual environment has not been created:
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+```
+
+### Step 2: Install dependencies
+
+If a `requirements.txt` file is available:
+
+```powershell
+python -m pip install -r requirements.txt
+```
+
+Otherwise, install the project's required dependencies using the versions specified by the project.
+
+### Step 3: Configure Dagster storage
+
+Set `DAGSTER_HOME` to a dedicated local directory so Dagster can store its instance data and run history.
+
+```powershell
+New-Item -ItemType Directory -Force "$PWD\.dagster_home"
+$env:DAGSTER_HOME = "$PWD\.dagster_home"
+```
+
+Run these commands from the project root. The environment variable applies to the current PowerShell session.
+
+Do not delete the Dagster home directory while you need its run history or stored metadata.
+
+## 4. Run the Pipeline
+
+### Step 1: Verify the Dagster definitions
+
+```powershell
+python -c "from orchestration.definitions import defs; print('Dagster definitions loaded successfully')"
+```
+
+### Step 2: Start the Dagster development server
+
+From the project root, with the virtual environment active and `DAGSTER_HOME` set:
+
+```powershell
+dagster dev -f orchestration/definitions.py
+```
+
+### Step 3: Open the Dagster UI
+
+Open the following address in your browser:
+
+http://localhost:3000
+
+Use the UI to locate `banking_pipeline_job`, launch a run, inspect the operation status, and review logs and errors.
+
+The development server must remain running while you use the UI.
+
+##  Step 4: Other way to run the pipeline
+
+Run: dagster job execute -f orchestration/definitions.py -j banking_pipeline_job
+
+## 5. Data Source and Output
+
+### Input
+
+The default source database is:
+
+```text
+database/banking.db
+```
+
+The database contains four main tables:
+
+- `customer`
+- `branch`
+- `account`
+- `transactions`
+
+The extraction operation can also be configured to use a separate SQLite database, which is useful for isolated testing and recovery scenarios.
+
+### Output
+
+The default Dagster report directory is:
+
+```text
+output/dagster/reports/
+```
+
+Reports are organized into subdirectories for loading, transformations, and analytics.
+
+The pipeline is expected to publish 15 CSV reports when execution succeeds.
+
+Operational logs are written to:
+
+```text
+output/logs/week7_pipeline.log
+```
+
+The primary database is read through a read-only SQLite connection during extraction. Failure and recovery tests should use isolated test databases rather than modifying the primary database.
+
+## 6. Run Tests
+
+Tests: tests/test_week7_banking_logic.py
+       tests/test_week7_retry.py
+
+Evidence: evidence/week_7/Automated_tests
+
+```powershell
+
+Valid data case and Bad data case:
+python -m pytest tests/test_week7_banking_logic.py::test_week7_valid_banking_data_passes tests/test_week7_banking_logic.py::test_week7_bad_banking_data_fails -v -s
+
+Safe Rerun:
+python -m pytest tests/test_week7_banking_logic.py::test_week7_safe_rerun_does_not_duplicate_reports -v -s  
+
+Dagster failure-path test:
+python -m pytest tests/test_week7_banking_logic.py::test_week7_validation_failure_skips_report_publishing -v -s
+
+Retry Handling:
+python -m pytest tests/test_week7_retry.py -v -s
+
+
+```
+
+Some tests start Spark and can take several minutes. Run targeted tests when investigating a specific issue instead of repeatedly running the entire suite.
+
+
+## 7. Known Limitations
+
+- Spark startup and execution can take several minutes, so the full test suite may be slow.
+- The retry test simulates a temporary loader failure; it does not demonstrate recovery from every possible real infrastructure failure.
+- The extraction and publishing operations allow up to two retries with a five-second delay.
+- The daily schedule is stopped by default and will not run automatically until enabled.
+
+
+## 8. Week 7 Verification Scenarios
+
+The Week 7 evidence document the following scenarios in evidence/week_7: 
+
+| Scenario | Expected result |
+|---|---|
+| A — Successful run | Validation passes and reports are published. |
+| B — Validation failure | The invalid transaction is detected, and report publishing is blocked. |
+| C — Recovery | After correcting the isolated test database, the pipeline succeeds. |
+| D — Safe rerun | Repeated runs do not append duplicate report rows or inflate totals. |
+| E — Retry handling | A simulated temporary failure is retried, and the job succeeds. |
+
+## 9. Incident Runbook and Airflow vs Dagster
+
+Location: docs/Week_7
+
+## 10. Summary
+
+Dagster orchestrates the existing banking data pipeline and provides operation-level execution tracking, logging, dependency management, and retry handling. Existing validation, transformation, and analytics logic is reused, while isolated test databases support failure and recovery testing without changing the primary banking database.
