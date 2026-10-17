@@ -123,7 +123,9 @@ banking_data_pipeline/
 ├── output/
 │   ├── logs/
 │   ├── dq/
-│   └── summaries/
+│   |── summaries/
+|   |── dagster/
+|   |── spark/
 │
 ├── database/
 │   ├── banking.db
@@ -133,28 +135,37 @@ banking_data_pipeline/
 │   ├── operational_queries.sql
 │   └── analytical_queries.sql
 │
+|
+|── test/data/
+|
 ├── tests/
 │   ├── fixtures/
 │   ├── test_pipeline.py
 │   ├── test_validation.py
 │   ├── test_database.py
 │   ├── test_incremental_load.py
-│   └── test_analytics.py
+│   |── test_analytics.py
 |   |── conftest.py
 |   |── test_banking_spark.py
+|   |── test_week7_banking_logic.py
+|   |── test_week7_retry.py
 |
 │
+|── orchestration/
+|
 ├── evidence/
 │   ├── earlier_pipeline/
 │   ├── class_4/
 │   └── week_5/
 |   |── week_6/
+|   |── week_7/
 │
 └── docs/
     ├── erd/
     │   └── ER Diagram.png
-    └── analytics/
-        └── star_schema.md
+    |└── analytics/
+    |   └── star_schema.md
+    |── Week_7    
 
 ```
 
