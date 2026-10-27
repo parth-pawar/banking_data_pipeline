@@ -1,0 +1,5 @@
+branch_id,transaction_date,transaction_type,transaction_count,total_amount,published_run_id
+BR001,2026-09-07,CREDIT,1,250.0,3f33d137-c97a-4d64-88a7-837c577da367
+BR001,2026-09-07,DEBIT,1,75.0,3f33d137-c97a-4d64-88a7-837c577da367
+BR002,2026-09-05,CREDIT,1,400.0,3f33d137-c97a-4d64-88a7-837c577da367
+BR002,2026-09-05,DEBIT,1,125.0,3f33d137-c97a-4d64-88a7-837c577da367

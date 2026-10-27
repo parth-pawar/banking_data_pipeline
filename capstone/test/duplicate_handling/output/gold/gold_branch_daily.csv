@@ -1,0 +1,2 @@
+branch_id,transaction_date,transaction_type,transaction_count,total_amount,published_run_id
+BR001,2026-09-09,DEBIT,1,80.0,0c5e563d-b162-4c06-adf9-e7fd3144173f
