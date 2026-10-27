@@ -1659,3 +1659,10 @@ Location: docs/Week_7
 ## 10. Summary
 
 Dagster orchestrates the existing banking data pipeline and provides operation-level execution tracking, logging, dependency management, and retry handling. Existing validation, transformation, and analytics logic is reused, while isolated test databases support failure and recovery testing without changing the primary banking database.
+
+
+---
+
+# 26 Integrated Banking Capstone - Week 8(First Week)
+
+Code & Documentation: banking_data_pipeline/capstone 
