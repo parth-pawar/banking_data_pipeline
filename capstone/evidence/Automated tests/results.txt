@@ -1,0 +1,122 @@
+### Test name: test_bronze_failure_stops_pipeline
+   Path: tests/test_bronze_failure.py
+   Run using: python -m pytest .\capstone\tests\test_bronze_failure.py -v
+
+
+Purpose: Verify that the pipeline handles a Bronze ingestion failure correctly when an input CSV has an invalid header.
+
+What it does:
+- Creates an isolated test environment with temporary databases and input files.
+- Supplies a CSV whose columns do not match the expected schema.
+- Runs the actual pipeline using `run_pipeline()`.
+- Checks that the file failure is recorded in the Bronze audit table.
+- Verifies that the overall pipeline status is `FAILED`, the failure stage is identified as `bronze`, and the Silver and Gold stages do not run.
+- Confirms that the orchestration audit records the failure.
+
+What it proves: The pipeline detects malformed input files, records the failure, stops downstream processing, 
+and preserves stage-level and overall failure information without modifying the normal Capstone data.
+
+
+capstone/tests/test_bronze_failure.py::test_bronze_failure_stops_pipeline PASSED                                                  [100%]
+========================================================== 1 passed in 0.47s ===========================================================
+
+
+
+
+
+
+
+
+
+
+
+
+### Test name: test_silver_failure_stops_pipeline
+   Path: tests/test_silver_failure.py
+   Run using: python -m pytest .\capstone\tests\test_silver_failure.py -v 
+
+
+Purpose: Verify that an unexpected error during Silver processing is captured by the orchestration runner and 
+prevents downstream Gold processing.
+
+What it does:
+- Creates an isolated test environment with temporary databases and input files.
+- Provides a valid transaction CSV so Bronze ingestion can complete successfully.
+- Deliberately creates an account-reference CSV that is missing the required `account_id` column.
+- Runs the actual pipeline using `run_pipeline()`.
+- Verifies that Bronze succeeds and the Silver processing function raises an error.
+- Confirms that Gold does not run.
+- Checks that the overall pipeline failure, failure stage, and error message are recorded in the orchestration audit table.
+
+What it proves: The pipeline can identify and record an unexpected Silver processing error, stop downstream processing, 
+and preserve failure information in the orchestration audit without modifying the normal Capstone data.
+
+
+capstone/tests/test_silver_failure.py::test_silver_failure_stops_pipeline PASSED                                                  [100%]
+
+========================================================== 1 passed in 0.33s ===========================================================
+
+
+
+
+
+
+
+
+### Test name: test_gold_failure_stops_pipeline
+   Path: tests/test_gold_failure.py
+   Run using: python -m pytest .\capstone\tests\test_gold_failure.py -v 
+
+
+Purpose: Verify that a Gold processing failure is recorded and does not overwrite previously published Gold data.
+
+What it does:
+1. Runs the pipeline with valid transactions to create a Gold baseline.
+2. Saves the published Gold database results and CSV contents.
+3. Removes accepted Silver transactions from the isolated test database to trigger a Gold failure.
+4. Reruns the pipeline and checks the failure status and audit records.
+5. Confirms that the previous Gold database results and CSV remain unchanged.
+
+What it proves: The pipeline detects and records Gold failures while preserving the last successfully 
+published Gold results.
+
+
+
+
+capstone/tests/test_gold_failure.py::test_gold_failure_preserves_previous_gold PASSED                                             [100%]
+
+=============================================== 1 passed (0:01:47) ===============================================
+
+
+
+
+
+
+
+
+
+### Test name: test_pipeline_recovery
+   Path: tests/test_pipeline_recovery.py
+   Run using:  python -m pytest .\capstone\tests\test_pipeline_recovery.py -v
+
+
+Purpose: Verify that the pipeline can recover from a Bronze ingestion failure without resetting databases or 
+deleting previously published Gold output.
+
+What it does:
+1. Runs the pipeline with valid input to establish a successful baseline and publish Gold results.
+2. Introduces a CSV with an invalid header, causing Bronze ingestion and the overall pipeline to fail.
+3. Verifies that the previous Gold CSV remains unchanged after the failure.
+4. Corrects the header in the same CSV file and reruns the pipeline without reinitializing databases or deleting output files.
+5. Verifies that the recovered Gold results contain both expected transactions with the correct totals.
+6. Checks the orchestration audit history to confirm the sequence SUCCESS → FAILED → SUCCESS.
+
+
+What it proves: The pipeline records failures, preserves previously published results during a failed run, and can 
+successfully process corrected input on a subsequent run without manually clearing existing data.
+
+
+capstone/tests/test_pipeline_recovery.py::test_pipeline_recovers_after_bronze_failure PASSED                                      [100%]
+
+
+=============================================== 1 passed in 64.34s (0:01:04) ================================================
