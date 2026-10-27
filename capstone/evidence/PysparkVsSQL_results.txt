@@ -1,0 +1,108 @@
+Source: test/rerun_safety
+
+
+## Using SQL 
+Run this SQL Query in Powershell from repository root:
+
+@'
+import sqlite3
+
+with sqlite3.connect(
+    "capstone/test/rerun_safety/database/silver.db"
+) as connection:
+    rows = connection.execute("""
+        SELECT
+            branch_id,
+            transaction_date,
+            transaction_type,
+            COUNT(transaction_id) AS transaction_count,
+            ROUND(SUM(amount), 2) AS total_amount
+        FROM silver_transactions
+        GROUP BY
+            branch_id,
+            transaction_date,
+            transaction_type
+        ORDER BY
+            branch_id,
+            transaction_date,
+            transaction_type
+    """).fetchall()
+
+    for row in rows:
+        print(row)
+'@ | python
+
+
+
+Output for SQL:
+
+('BR001', '2026-09-07', 'CREDIT', 1, 250.0)
+('BR001', '2026-09-07', 'DEBIT', 1, 75.0)
+('BR002', '2026-09-05', 'CREDIT', 1, 400.0)
+('BR002', '2026-09-05', 'DEBIT', 1, 125.0)
+
+
+## Using Pyspark:
+
+import sqlite3
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import count, sum, round
+
+# Create a Spark session
+spark = (
+    SparkSession.builder
+    .appName("GoldAggregationComparison")
+    .master("local[*]")
+    .getOrCreate()
+)
+
+# Read Silver transactions from SQLite
+with sqlite3.connect(
+    "capstone/test/rerun_safety/database/silver.db"
+) as connection:
+    silver_df = spark.createDataFrame(
+        __import__("pandas").read_sql_query(
+            "SELECT * FROM silver_transactions",
+            connection
+        )
+    )
+
+# Perform the Gold aggregation using PySpark
+gold_df = (
+    silver_df
+    .groupBy(
+        "branch_id",
+        "transaction_date",
+        "transaction_type"
+    )
+    .agg(
+        count("transaction_id").alias("transaction_count"),
+        round(sum("amount"), 2).alias("total_amount")
+    )
+    .orderBy(
+        "branch_id",
+        "transaction_date",
+        "transaction_type"
+    )
+)
+
+# Display the results
+gold_df.show(truncate=False)
+
+# Stop Spark
+spark.stop()
+
+
+
+Output for Pyspark:
+
+
++---------+----------------+----------------+-----------------+------------+
+|branch_id|transaction_date|transaction_type|transaction_count|total_amount|
++---------+----------------+----------------+-----------------+------------+
+|BR001    |2026-09-07      |CREDIT          |1                |250.0       |
+|BR001    |2026-09-07      |DEBIT           |1                |75.0        |
+|BR002    |2026-09-05      |CREDIT          |1                |400.0       |
+|BR002    |2026-09-05      |DEBIT           |1                |125.0       |
++---------+----------------+----------------+-----------------+------------+
+

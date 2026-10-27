@@ -1,0 +1,48 @@
+Run : python .\capstone\orchestration\run_pipeline.py
+
+   
+
+=== Stage 1: Bronze ingestion ===
+Ingested 8 rows from BR001_20260906_TRANSACTION.csv
+Ingested 8 rows from BR002_20260906_TRANSACTION.csv
+Ingested 8 rows from BR003_20260906_TRANSACTION.csv
+
+Bronze ingestion summary
+Run ID: 51481f6f-74c4-4b1e-840e-4cbc7dd98e75
+Ingested files: 3
+Skipped files: 0
+Failed files: 0
+Overall status: SUCCESS
+
+=== Stage 2: Silver processing ===
+Silver run ID: 93cf5baf-5504-4149-a581-579f4ba694a3
+Bronze rows evaluated: 24
+New transactions accepted: 10
+Corrections applied: 0
+Rejected rows: 14
+BR001_20260906_TRANSACTION.csv: source=8, accepted=3, rejected=5
+BR002_20260906_TRANSACTION.csv: source=8, accepted=3, rejected=5
+BR003_20260906_TRANSACTION.csv: source=8, accepted=4, rejected=4
+                                                                                 
+Validated Gold aggregation:
++---------+----------------+----------------+-----------------+------------+    
+|branch_id|transaction_date|transaction_type|transaction_count|total_amount|
++---------+----------------+----------------+-----------------+------------+
+|BR001    |2026-09-06      |CREDIT          |1                |500.0       |
+|BR001    |2026-09-06      |DEBIT           |2                |165.5       |
+|BR002    |2026-09-06      |CREDIT          |2                |1125.0      |
+|BR002    |2026-09-06      |DEBIT           |1                |60.0        |
+|BR003    |2026-09-06      |CREDIT          |2                |1350.0      |
+|BR003    |2026-09-06      |DEBIT           |2                |225.0       |
++---------+----------------+----------------+-----------------+------------+
+
+
+Gold publication successful.
+Run ID: 0339a24c-50ae-481e-9cfa-ca87d313d60b
+Silver transactions: 10
+Gold groups: 6
+Gold database: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\database\gold.db
+Gold CSV: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\output\gold\gold_branch_daily.csv
+
+Overall status: SUCCESS
+Pipeline run ID: 824b94ee-c5a7-4884-94df-767deb283347

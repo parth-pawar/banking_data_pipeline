@@ -1,0 +1,132 @@
+Test Name: Run same inputs twice
+Path: test/rerun_safely
+
+
+Check	                    First run	            Second run	                Result
+Files ingested	            2	                     0	                        PASS
+Unchanged files skipped	    0	                     2	                        PASS
+Silver transaction count	4	                     4	                        PASS
+Gold group count	        4	                     4	                        PASS
+Gold business results	    4 groups	            Same 4 groups and totals	PASS
+Overall status	            SUCCESS	                SUCCESS	                    PASS
+
+
+All four Gold results remained identical:
+Branch	Date	Type	Count	Total
+BR001	2026-09-07	CREDIT	1	250.00
+BR001	2026-09-07	DEBIT	1	75.00
+BR002	2026-09-05	CREDIT	1	400.00
+BR002	2026-09-05	DEBIT	1	125.00
+
+
+The IDs identify individual execution attempts, not the business results. Each run gets new Bronze, 
+Silver, Gold, and orchestration run IDs, even when the inputs have not changed.
+
+ID	    First run	                            Second run
+Bronze	f9f5555f-1d8c-4133-889b-f9d0f1b9f73a	d8d0f306-56cc-4115-a635-f997d9132b90
+Silver	1977221d-94b1-43df-89c4-8f2a9f4d3168	db6e3c41-3bfa-4696-ba4e-dde045a39597
+Gold	7d54b529-59a8-4c09-9759-8121168a5b19	3f33d137-c97a-4d64-88a7-837c577da367
+Pipeline 27c7f136-eeb9-444f-8d77-e97e8bf3e1c5	25321750-9bfa-4f1d-863b-6a7bedf77684
+
+
+Evidence paths
+- Gold database: capstone/test/rerun_safety/database/gold.db
+- Gold CSV: capstone/test/rerun_safety/output/gold/gold_branch_daily.csv
+- Orchestration audit: capstone/test/rerun_safety/database/orchestration.db
+
+
+
+
+First Run:
+Run: python .\capstone\orchestration\run_pipeline.py --test rerun_safety
+
+
+=== Stage 1: Bronze ingestion ===
+Ingested 2 rows from BR001_20260907_TRANSACTION.csv
+Ingested 2 rows from BR002_20260905_TRANSACTION.csv
+
+Bronze ingestion summary
+Run ID: f9f5555f-1d8c-4133-889b-f9d0f1b9f73a
+Ingested files: 2
+Skipped files: 0
+Failed files: 0
+Overall status: SUCCESS
+
+=== Stage 2: Silver processing ===
+Silver run ID: 1977221d-94b1-43df-89c4-8f2a9f4d3168
+Bronze rows evaluated: 4
+New transactions accepted: 4
+Corrections applied: 0
+Rejected rows: 0
+BR001_20260907_TRANSACTION.csv: source=2, accepted=2, rejected=0
+BR002_20260905_TRANSACTION.csv: source=2, accepted=2, rejected=0
+
+=== Stage 3: Gold publication ===
+
+                                                                               
+Validated Gold aggregation:
++---------+----------------+----------------+-----------------+------------+    
+|branch_id|transaction_date|transaction_type|transaction_count|total_amount|
++---------+----------------+----------------+-----------------+------------+
+|BR001    |2026-09-07      |CREDIT          |1                |250.0       |
+|BR001    |2026-09-07      |DEBIT           |1                |75.0        |
+|BR002    |2026-09-05      |CREDIT          |1                |400.0       |
+|BR002    |2026-09-05      |DEBIT           |1                |125.0       |
++---------+----------------+----------------+-----------------+------------+
+
+
+Gold publication successful.
+Run ID: 7d54b529-59a8-4c09-9759-8121168a5b19
+Silver transactions: 4
+Gold groups: 4
+Gold database: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\rerun_safety\database\gold.db
+Gold CSV: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\rerun_safety\output\gold\gold_branch_daily.csv
+
+Overall status: SUCCESS
+Pipeline run ID: 27c7f136-eeb9-444f-8d77-e97e8bf3e1c5
+
+
+
+
+
+Second Run:
+
+=== Stage 1: Bronze ingestion ===
+Skipped unchanged file: BR001_20260907_TRANSACTION.csv
+Skipped unchanged file: BR002_20260905_TRANSACTION.csv
+
+Bronze ingestion summary
+Run ID: d8d0f306-56cc-4115-a635-f997d9132b90
+Ingested files: 0
+Skipped files: 2
+Failed files: 0
+Overall status: SUCCESS
+
+=== Stage 2: Silver processing ===
+Silver run ID: db6e3c41-3bfa-4696-ba4e-dde045a39597
+No new Bronze rows to process.
+Bronze rows already processed: 4
+
+=== Stage 3: Gold publication ===
+
+                                                                              
+Validated Gold aggregation:
++---------+----------------+----------------+-----------------+------------+    
+|branch_id|transaction_date|transaction_type|transaction_count|total_amount|
++---------+----------------+----------------+-----------------+------------+
+|BR001    |2026-09-07      |CREDIT          |1                |250.0       |
+|BR001    |2026-09-07      |DEBIT           |1                |75.0        |
+|BR002    |2026-09-05      |CREDIT          |1                |400.0       |
+|BR002    |2026-09-05      |DEBIT           |1                |125.0       |
++---------+----------------+----------------+-----------------+------------+
+
+
+Gold publication successful.
+Run ID: 3f33d137-c97a-4d64-88a7-837c577da367
+Silver transactions: 4
+Gold groups: 4
+Gold database: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\rerun_safety\database\gold.db
+Gold CSV: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\rerun_safety\output\gold\gold_branch_daily.csv
+
+Overall status: SUCCESS
+Pipeline run ID: 25321750-9bfa-4f1d-863b-6a7bedf77684

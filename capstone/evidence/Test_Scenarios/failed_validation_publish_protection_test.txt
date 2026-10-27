@@ -1,0 +1,109 @@
+Test Name: Failed validation / publish protection
+Path: test/failed_validation
+
+Check	                    Expected	            Actual	                        Result
+Valid baseline file	        Skipped as unchanged	1 file skipped	                PASS
+Invalid file	            Ingested	            3 rows ingested	                PASS
+Invalid records	            All 3 rejected	        0 accepted, 3 rejected	        PASS
+Previous Gold CREDIT	    1 transaction,          250.00	1 transaction, 250.00	PASS
+Previous Gold DEBIT	        1 transaction, 75.00	1 transaction, 75.00	        PASS
+Gold groups	                Remain at 2	            2 groups	                    PASS
+
+
+Evidence paths:
+- Silver database: capstone/test/failed_validation/database/silver.db
+- Gold database: capstone/test/failed_validation/database/gold.db
+- Gold CSV: capstone/test/failed_validation/output/gold/gold_branch_daily.csv
+- Orchestration database: capstone/test/failed_validation/database/orchestration.db
+
+
+First Run:
+Run: python .\capstone\orchestration\run_pipeline.py --test failed_validation
+
+
+=== Stage 1: Bronze ingestion ===
+Ingested 2 rows from BR001_20260907_TRANSACTION.csv
+
+Bronze ingestion summary
+Run ID: 12af03a1-1235-4f91-b870-934d7a76ea8b
+Ingested files: 1
+Skipped files: 0
+Failed files: 0
+Overall status: SUCCESS
+
+=== Stage 2: Silver processing ===
+Silver run ID: ee9fc430-1c62-45b2-9652-67304ccbf9c5
+Bronze rows evaluated: 2
+New transactions accepted: 2
+Corrections applied: 0
+Rejected rows: 0
+BR001_20260907_TRANSACTION.csv: source=2, accepted=2, rejected=0
+
+=== Stage 3: Gold publication ===
+
+                                                                                
+Validated Gold aggregation:
++---------+----------------+----------------+-----------------+------------+    
+|branch_id|transaction_date|transaction_type|transaction_count|total_amount|
++---------+----------------+----------------+-----------------+------------+
+|BR001    |2026-09-07      |CREDIT          |1                |250.0       |
+|BR001    |2026-09-07      |DEBIT           |1                |75.0        |
++---------+----------------+----------------+-----------------+------------+
+
+
+Gold publication successful.
+Run ID: 9e814a3c-5fad-4eb7-be8f-190d82dd3cb0
+Silver transactions: 2
+Gold groups: 2
+Gold database: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\failed_validation\database\gold.db
+Gold CSV: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\failed_validation\output\gold\gold_branch_daily.csv
+
+Overall status: SUCCESS
+Pipeline run ID: 04efbb2c-3e6f-4c3d-a478-ebf88c1e4630
+
+
+
+Second Run:
+Move BR001_20260908_TRANSACTION.csv containing invalid records
+
+
+=== Stage 1: Bronze ingestion ===
+Skipped unchanged file: BR001_20260907_TRANSACTION.csv
+Ingested 3 rows from BR001_20260908_TRANSACTION.csv
+
+Bronze ingestion summary
+Run ID: 6bec39c9-2224-4f3a-beed-62a87e638cf1
+Ingested files: 1
+Skipped files: 1
+Failed files: 0
+Overall status: SUCCESS
+
+=== Stage 2: Silver processing ===
+Silver run ID: f406ad9d-9a43-4f71-9428-3fa3901ac628
+Bronze rows evaluated: 3
+New transactions accepted: 0
+Corrections applied: 0
+Rejected rows: 3
+BR001_20260908_TRANSACTION.csv: source=3, accepted=0, rejected=3
+
+=== Stage 3: Gold publication ===
+
+                                                                                
+Validated Gold aggregation:
++---------+----------------+----------------+-----------------+------------+    
+|branch_id|transaction_date|transaction_type|transaction_count|total_amount|
++---------+----------------+----------------+-----------------+------------+
+|BR001    |2026-09-07      |CREDIT          |1                |250.0       |
+|BR001    |2026-09-07      |DEBIT           |1                |75.0        |
++---------+----------------+----------------+-----------------+------------+
+
+
+Gold publication successful.
+Run ID: 56ed7faf-44b8-450a-abcb-ba8483adcc79
+Silver transactions: 2
+Gold groups: 2
+Gold database: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\failed_validation\database\gold.db
+Gold CSV: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\failed_validation\output\gold\gold_branch_daily.csv
+
+Overall status: SUCCESS
+Pipeline run ID: 1ea6227e-c580-4746-affe-512ed68a6b94

@@ -1,0 +1,71 @@
+Test Name: Duplicate transaction / repeated file
+Path: test/duplicate_handling
+
+
+Scenario / check	                        Expected result	                            Actual result	                    Status
+Duplicate ID T7001 — first occurrence	    Reject with DUPLICATE_TRANSACTION_ID	    Rejected with that reason	        PASS
+Duplicate ID T7001 — second occurrence	    Reject with DUPLICATE_TRANSACTION_ID	    Rejected with that reason	        PASS
+Valid transaction T7002	                    Accept into Silver	                        Accepted; DEBIT 80.00	            PASS
+Source-to-Silver reconciliation	            3 source rows = 1 accepted + 2 rejected	    3 = 1 + 2	                        PASS
+Gold excludes duplicate transactions	    No CREDIT result from T7001	                Only the BR001 DEBIT group appears	PASS
+Gold aggregate	                            Count 1, total 80.00	                    Count 1, total 80.00	            PASS
+
+
+Evidence	                Location
+Duplicate rejection reasons	capstone/test/duplicate_handling/database/silver.db — transaction_exceptions
+Accepted transaction	    capstone/test/duplicate_handling/database/silver.db — silver_transactions
+Gold aggregate	            capstone/test/duplicate_handling/database/gold.db — gold_branch_daily
+Gold CSV export	            capstone/test/duplicate_handling/output/gold/gold_branch_daily.csv
+Pipeline audit	            capstone/test/duplicate_handling/database/orchestration.db
+
+
+
+Run: python .\capstone\orchestration\run_pipeline.py --test duplicate_handling
+
+=== Stage 1: Bronze ingestion ===
+Ingested 3 rows from BR001_20260909_TRANSACTION.csv
+
+Bronze ingestion summary
+Run ID: d8a22b08-ab48-42b7-9bb9-d83050a225c8
+Ingested files: 1
+Skipped files: 0
+Failed files: 0
+Overall status: SUCCESS
+
+=== Stage 2: Silver processing ===
+Silver run ID: bfdf06a6-9ee1-4b8c-abcd-f2f5a6245467
+Bronze rows evaluated: 3
+New transactions accepted: 1
+Corrections applied: 0
+Rejected rows: 2
+BR001_20260909_TRANSACTION.csv: source=3, accepted=1, rejected=2
+
+=== Stage 3: Gold publication ===
+
+                                                                                
+Validated Gold aggregation:
++---------+----------------+----------------+-----------------+------------+    
+|branch_id|transaction_date|transaction_type|transaction_count|total_amount|
++---------+----------------+----------------+-----------------+------------+
+|BR001    |2026-09-09      |DEBIT           |1                |80.0        |
++---------+----------------+----------------+-----------------+------------+
+
+
+Gold publication successful.
+Run ID: 0c5e563d-b162-4c06-adf9-e7fd3144173f
+Silver transactions: 1
+Gold groups: 1
+Gold database: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\duplicate_handling\database\gold.db
+Gold CSV: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\duplicate_handling\output\gold\gold_branch_daily.csv
+
+Overall status: SUCCESS
+Pipeline run ID: c6dfa86a-33be-4425-8c10-ffaf95fdf9ed
+
+
+
+Verify duplicate transactions: 
+
+Run: python -c "import sqlite3; c=sqlite3.connect('capstone/test/duplicate_handling/database/silver.db'); print(*c.execute('SELECT transaction_id, rejection_reasons FROM transaction_exceptions ORDER BY transaction_id').fetchall(), sep='\n'); c.close()"
+
+('T7001', 'DUPLICATE_TRANSACTION_ID')
+('T7001', 'DUPLICATE_TRANSACTION_ID')

@@ -1,0 +1,65 @@
+Test: Normal multi-branch, multi-date input
+Path: test/normal_input
+
+
+Scenario	                Expected	                Actual	                    Pass/Fail	Evidence path 
+Silver transaction count	4 transactions	            4 transactions	            PASS	    capstone/test/normal_input/database/silver.db — silver_transactions
+BR001 — CREDIT, 2026-09-07	Count: 1; Total: 250.00	    Count: 1; Total: 250.00	    PASS	    capstone/test/normal_input/database/gold.db — gold_branch_daily
+BR001 — DEBIT, 2026-09-07	Count: 1; Total: 75.00	    Count: 1; Total: 75.00	    PASS	    capstone/test/normal_input/database/gold.db — gold_branch_daily
+BR002 — CREDIT, 2026-09-05	Count: 1; Total: 400.00	    Count: 1; Total: 400.00	    PASS	    capstone/test/normal_input/database/gold.db — gold_branch_daily
+BR002 — DEBIT, 2026-09-05	Count: 1; Total: 125.00	    Count: 1; Total: 125.00	    PASS	    capstone/test/normal_input/database/gold.db — gold_branch_daily
+Gold aggregation group count 4 groups	                4 groups	                PASS	    capstone/test/normal_input/database/gold.db — Gold aggregation query
+
+Overall result: PASS — 6 checks passed, 0 failed.
+
+
+Run: python .\capstone\orchestration\run_pipeline.py --test normal_input
+
+=== Stage 1: Bronze ingestion ===
+Ingested 2 rows from BR001_20260907_TRANSACTION.csv
+Ingested 2 rows from BR002_20260905_TRANSACTION.csv
+
+Bronze ingestion summary
+Run ID: 44e892f2-0ddb-4e04-885a-fa5754230408
+Ingested files: 2
+Skipped files: 0
+Failed files: 0
+Overall status: SUCCESS
+
+=== Stage 2: Silver processing ===
+Silver run ID: 19d4fbd2-f573-4a98-a939-1e8a0c529c6e
+Bronze rows evaluated: 4
+New transactions accepted: 4
+Corrections applied: 0
+Rejected rows: 0
+BR001_20260907_TRANSACTION.csv: source=2, accepted=2, rejected=0
+BR002_20260905_TRANSACTION.csv: source=2, accepted=2, rejected=0
+
+=== Stage 3: Gold publication ===
+
+                                                                               
+Validated Gold aggregation:
++---------+----------------+----------------+-----------------+------------+    
+|branch_id|transaction_date|transaction_type|transaction_count|total_amount|
++---------+----------------+----------------+-----------------+------------+
+|BR001    |2026-09-07      |CREDIT          |1                |250.0       |
+|BR001    |2026-09-07      |DEBIT           |1                |75.0        |
+|BR002    |2026-09-05      |CREDIT          |1                |400.0       |
+|BR002    |2026-09-05      |DEBIT           |1                |125.0       |
++---------+----------------+----------------+-----------------+------------+
+
+
+Gold publication successful.
+Run ID: 4c794f4b-41ca-4324-910a-6671c798652f
+Silver transactions: 4
+Gold groups: 4
+Gold database: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\normal_input\database\gold.db
+Gold CSV: C:\Users\Parth Pawar\Documents\banking_data_pipeline\capstone\test\normal_input\output\gold\gold_branch_daily.csv
+
+Overall status: SUCCESS
+Pipeline run ID: 103441ab-aaae-4cbf-a8d5-32299c30eac8
+
+
+Run to Verify:  python .\capstone\test\normal_input\verify_normal_input.py
+
+PASS: Silver count and Gold totals match expected results.
