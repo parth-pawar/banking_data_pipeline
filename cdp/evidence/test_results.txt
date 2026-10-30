@@ -1,0 +1,10 @@
+Run: pytest cdp\tests\test_customer360.py -v
+
+cdp/tests/test_customer360.py::test_c001_customer_summary PASSED                                                                                [ 16%]
+cdp/tests/test_customer360.py::test_c002_api_returns_requested_customer PASSED                                                                  [ 33%]
+cdp/tests/test_customer360.py::test_c003_customer_with_no_transactions PASSED                                                                   [ 50%]
+cdp/tests/test_customer360.py::test_c999_unknown_customer_returns_404 PASSED                                                                    [ 66%]
+cdp/tests/test_customer360.py::test_build_customer360_is_idempotent PASSED                                                                      [ 83%]
+cdp/tests/test_customer360.py::test_invalid_transactions_are_rejected PASSED                                                                    [100%]
+
+================================================================= 6 passed in 1.22s ==================================================================
