@@ -1,0 +1,4 @@
+customer_id,customer_name,account_count,transaction_count,total_transaction_amount,last_transaction_date
+C001,Synthetic Customer One,3,3,665.5,2026-09-06
+C002,Synthetic Customer Two,7,7,2760.0,2026-09-06
+C003,Synthetic Customer Three,1,0,0.0,
