@@ -1,0 +1,12 @@
+
+Run: python cdp\build_customer360.py    
+
+
+CDP database initialized successfully.
+Loaded 3 valid customers.
+Loaded 11 valid accounts.
+Recorded 0 input exceptions.
+Recorded 0 transaction exceptions.
+Customer 360 Gold table rebuilt successfully.
+Gold CSV snapshot exported to: C:\Users\Parth Pawar\Documents\banking_data_pipeline\cdp\output\customer_360.csv
+CDP build completed.

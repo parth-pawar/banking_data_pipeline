@@ -1666,3 +1666,7 @@ Dagster orchestrates the existing banking data pipeline and provides operation-l
 # 26 Integrated Banking Capstone - Week 8(First Week)
 
 Code & Documentation: banking_data_pipeline/capstone 
+
+# 27 CDP - Week 8(Second Week)
+
+Code & Documentation: banking_data_pipeline/cdp

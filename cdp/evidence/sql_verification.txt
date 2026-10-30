@@ -1,0 +1,26 @@
+Run: python cdp/run_sql_verification.py
+
+
+Query result:
+{'customer_id': 'C001', 'customer_name': 'Synthetic Customer One', 'account_count': 3, 'transaction_count': 3, 'total_transaction_amount': 665.5, 'last_transaction_date': '2026-09-06'}
+{'customer_id': 'C002', 'customer_name': 'Synthetic Customer Two', 'account_count': 7, 'transaction_count': 7, 'total_transaction_amount': 2760.0, 'last_transaction_date': '2026-09-06'}
+{'customer_id': 'C003', 'customer_name': 'Synthetic Customer Three', 'account_count': 1, 'transaction_count': 0, 'total_transaction_amount': 0, 'last_transaction_date': None}
+
+Query result:
+{'customer_id': 'C001', 'verification_status': 'PASS'}
+{'customer_id': 'C002', 'verification_status': 'PASS'}
+{'customer_id': 'C003', 'verification_status': 'PASS'}
+
+SQL verification completed.
+
+
+
+
+
+
+CSV Record(customer_360.csv):
+
+customer_id,customer_name,account_count,transaction_count,total_transaction_amount,last_transaction_date
+C001,Synthetic Customer One,3,3,665.5,2026-09-06
+C002,Synthetic Customer Two,7,7,2760.0,2026-09-06
+C003,Synthetic Customer Three,1,0,0.0,

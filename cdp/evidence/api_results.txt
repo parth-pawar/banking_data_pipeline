@@ -1,0 +1,50 @@
+Run to start server: python cdp/api_server.py
+
+
+
+Run: Invoke-RestMethod -Uri "http://127.0.0.1:8000/customers/C001/summary" -Method Get   
+
+Result:       
+
+customer_id              : C001                                                                                                          
+customer_name            : Synthetic Customer One                                                                                        
+account_count            : 3                                                            
+transaction_count        : 3
+total_transaction_amount : 665.5
+last_transaction_date    : 2026-09-06
+
+
+
+
+Run:  Invoke-RestMethod -Uri "http://127.0.0.1:8000/customers/C002/summary" -Method Get
+
+Result:
+
+customer_id              : C002
+customer_name            : Synthetic Customer Two
+account_count            : 7
+transaction_count        : 7
+total_transaction_amount : 2760.0
+last_transaction_date    : 2026-09-06
+
+
+
+Run: Invoke-RestMethod -Uri "http://127.0.0.1:8000/customers/C003/summary" -Method Get
+
+Result:
+
+
+customer_id              : C003
+customer_name            : Synthetic Customer Three
+account_count            : 1
+transaction_count        : 0
+total_transaction_amount : 0.0
+last_transaction_date    : 
+
+
+
+Run for Unknown Customer: Invoke-RestMethod -Uri "http://127.0.0.1:8000/customers/C999/summary" -Method Get
+
+Result:
+
+Invoke-RestMethod : {"error": "Customer not found"}
