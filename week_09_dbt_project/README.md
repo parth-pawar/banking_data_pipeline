@@ -46,10 +46,12 @@ week_09_dbt_project/
 │   └── assert_nonnegative_transaction_amount.sql
 │
 ├── docs/
+|   |── TEST_FAILURES_SIMULATION.md 
 │   └── dbt_lineage.png
 │
 ├── dbt_project.yml
 ├── profiles.yml.example
+|── test_failure.duckdb
 ├── requirements.txt
 └── README.md
 ```
