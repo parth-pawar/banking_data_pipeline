@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: "Staging model for customer records."
+    columns:
+      - name: customer_id
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_accounts
+    description: "Staging model for bank account records."
+    columns:
+      - name: account_id
+        data_tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+
+  - name: stg_transactions
+    description: "Staging model for banking transactions."
+    columns:
+      - name: transaction_id
+        data_tests:
+          - unique
+          - not_null
+
+      - name: account_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_accounts')
+                field: account_id
+
+      - name: transaction_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['DEPOSIT', 'PURCHASE', 'WITHDRAWAL']

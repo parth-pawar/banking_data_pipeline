@@ -18,3 +18,13 @@ spark_test.py
 
 # Dagster
 .dagster_home/
+# Week 9 dbt generated files
+week_09_dbt_project/profiles.yml
+week_09_dbt_project/dev.duckdb
+week_09_dbt_project/target/
+week_09_dbt_project/logs/
+week_09_dbt_project/.venv/
+week_09_dbt_project/dbt_packages/
+
+# Local dbt metadata
+week_09_dbt_project/.user.yml

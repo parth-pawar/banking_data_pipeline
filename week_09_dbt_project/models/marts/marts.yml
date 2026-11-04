@@ -1,0 +1,47 @@
+version: 2
+
+models:
+  - name: dim_accounts
+    description: "One row per bank account, enriched with the associated customer details."
+    columns:
+      - name: account_id
+        description: "Unique identifier for the bank account."
+        data_tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        description: "Identifier of the customer who owns the account."
+        data_tests:
+          - not_null
+
+      - name: account_type
+        description: "Type of bank account, such as Checking or Savings."
+
+      - name: account_status
+        description: "Current status of the account, such as ACTIVE or CLOSED."
+
+  - name: fct_daily_account_activity
+    description: "Daily account-level transaction summary, with one row per transaction date and account."
+    columns:
+      - name: transaction_date
+        description: "Date on which the account transactions occurred."
+        data_tests:
+          - not_null
+
+      - name: account_id
+        description: "Account associated with the daily activity."
+        data_tests:
+          - not_null
+
+      - name: transaction_count
+        description: "Number of transactions for the account on that date."
+
+      - name: total_deposits
+        description: "Sum of deposit amounts in USD."
+
+      - name: total_outflows
+        description: "Sum of purchase and withdrawal amounts in USD, shown as positive magnitudes."
+
+      - name: net_amount
+        description: "Deposits minus purchases and withdrawals in USD."
