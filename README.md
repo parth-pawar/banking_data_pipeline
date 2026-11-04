@@ -1670,3 +1670,7 @@ Code & Documentation: banking_data_pipeline/capstone
 # 27 CDP - Week 8(Second Week)
 
 Code & Documentation: banking_data_pipeline/cdp
+
+# 28 dbt - Week 9
+
+Code and Documentation: banking_data_pipeline/dbt
