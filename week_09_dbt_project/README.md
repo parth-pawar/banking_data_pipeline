@@ -196,7 +196,16 @@ The daily account activity model produced these totals:
 
 Net amount = Total deposits − Total outflows.
 
-## 9. Model Lineage
+## 9.  Model Dependencies and Data Lineage
+
+The dbt project follows a layered transformation structure.
+
+1. **Seeds:** The three CSV files (`customers`, `accounts`, and `transactions`) are loaded into DuckDB using `dbt seed`.
+2. **Staging:** Each source table is cleaned and cast into consistent data types through its corresponding staging model.
+3. **Intermediate:** `int_transaction_enriched` joins transactions with account and customer information and calculates signed transaction amounts.
+4. **Marts:** `dim_accounts` provides account-level customer information, while `fct_daily_account_activity` aggregates transactions by date and account.
+
+The models use dbt's `ref()` function to declare dependencies. dbt uses these references to build the correct execution order and generate the lineage graph.
 
 The dbt lineage graph illustrates the dependencies between source seeds, staging models, the intermediate model, and final marts.
 
@@ -229,7 +238,6 @@ This project demonstrates how dbt can organize SQL transformations into reusable
 
 ### CI Validation
 
-### CI Validation
 
 GitHub Actions is configured to automatically validate the project on pull requests that modify the Week 9 project or its workflow.
 
