@@ -226,3 +226,26 @@ The intermediate model depends on all three staging models. The account dimensio
 ## 12. Conclusion
 
 This project demonstrates how dbt can organize SQL transformations into reusable layers, manage model dependencies, validate data quality, and generate documentation and lineage for a banking analytics workflow.
+
+### CI Validation
+
+### CI Validation
+
+GitHub Actions is configured to automatically validate the project on pull requests that modify the Week 9 project or its workflow.
+
+**Workflow:** `Week 9 dbt CI`
+
+**CI Process:**
+1. Checks out the repository.
+2. Sets up Python 3.11.
+3. Installs dependencies from `requirements.txt`.
+4. Configures the dbt profile using `profiles.yml.example`.
+5. Runs `dbt build`.
+
+**Latest CI Result:**
+- Pull Request: [#1 – Week 9: Standalone Banking Analytics with dbt](https://github.com/parth-pawar/banking_data_pipeline/pull/1)
+- Workflow Run: [Week 9 dbt CI – Run #1](https://github.com/parth-pawar/banking_data_pipeline/actions/runs/41869399065)
+- Status: **Passed**
+- Execution time: 35 seconds
+
+The CI build completed successfully, confirming that the project can be built in a clean GitHub Actions environment.
