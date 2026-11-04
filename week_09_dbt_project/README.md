@@ -226,3 +226,7 @@ The intermediate model depends on all three staging models. The account dimensio
 ## 12. Conclusion
 
 This project demonstrates how dbt can organize SQL transformations into reusable layers, manage model dependencies, validate data quality, and generate documentation and lineage for a banking analytics workflow.
+
+### CI Validation
+
+This project is validated using GitHub Actions, which runs `dbt build` on pull requests.
